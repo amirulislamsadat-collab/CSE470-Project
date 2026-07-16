@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALMS — Adaptive Life Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,sans-serif;background:#0b0f19;color:#f9fafb;min-height:100vh;-webkit-font-smoothing:antialiased}
+.navbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:64px;background:rgba(10,14,26,0.96);backdrop-filter:blur(12px);border-bottom:1px solid #1e293b}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#f9fafb;font-weight:700;font-size:1.1rem}
+.nav-logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#6366f1);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff}
+.nav-links{display:flex;align-items:center;gap:4px;list-style:none}
+.nav-links a{color:#9ca3af;text-decoration:none;font-size:13.5px;font-weight:500;padding:7px 14px;border-radius:8px;display:flex;align-items:center;gap:6px;transition:background .2s,color .2s}
+.nav-links a:hover,.nav-links a.active{color:#f9fafb;background:rgba(255,255,255,0.06)}
+.nav-links a .nav-icon{font-size:14px}
+.nav-right{display:flex;align-items:center;gap:12px}
+.user-chip{display:flex;align-items:center;gap:8px}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff}
+.user-name{font-size:13px;color:#d1d5db;font-weight:500}
+.btn-logout{background:#1f2937;border:1px solid #374151;color:#f87171;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:6px}
+.btn-logout:hover{background:#ef444415;border-color:#ef4444}
+.flash-wrap{max-width:1100px;margin:16px auto 0;padding:0 20px}
+.flash{padding:13px 18px;border-radius:10px;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:10px}
+.flash-success{background:rgba(16,185,129,.1);color:#10b981;border:1px solid rgba(16,185,129,.2)}
+.flash-error{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)}
+</style>
+</head>
+<body>
+<% if(user){ %>
+<nav class="navbar">
+  <a href="/dashboard" class="nav-brand">
+    <div class="nav-logo">∞</div>
+    ALMS
+  </a>
+<ul class="nav-links">
+  <li><a href="/dashboard" class="<%= (typeof currentPath !== 'undefined' && currentPath === '/dashboard') ? 'active' : '' %>"><span class="nav-icon">⊞</span> Dashboard</a></li>
+  <li><a href="/tasks/hub" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/tasks')) ? 'active' : '' %>"><span class="nav-icon">≡</span> Tasks</a></li>
+  <li><a href="/modules/settings" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/modules')) ? 'active' : '' %>"><span class="nav-icon">⚙</span> Modules</a></li>
+</ul>
+  <div class="nav-right">
+    <div class="user-chip">
+      <div class="user-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+      <span class="user-name"><%= user.name %></span>
+    </div>
+    <a href="/logout" style="text-decoration:none">
+      <button class="btn-logout">↩ Logout</button>
+    </a>
+  </div>
+</nav>
+<% } %>
+<% if(success){ %>
+<div class="flash-wrap"><div class="flash flash-success">✅ <%- success %></div></div>
+<% } %>
+<% if(error){ %>
+<div class="flash-wrap"><div class="flash flash-error">⚠ <%- error %></div></div>
+<% } %>

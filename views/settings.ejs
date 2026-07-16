@@ -1,0 +1,65 @@
+<%- include('header') %>
+<style>
+.page{padding:36px 32px;max-width:1100px;margin:0 auto}
+.page-title{font-size:26px;font-weight:800;color:#f9fafb;margin-bottom:6px;display:flex;align-items:center;gap:12px}
+.page-desc{color:#6b7280;font-size:14px;margin-bottom:24px}
+.info-box{background:#111827;border-left:3px solid #3b82f6;border-radius:0 12px 12px 0;padding:16px 20px;margin-bottom:28px}
+.info-box-head{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#60a5fa;margin-bottom:6px}
+.info-box p{font-size:13px;color:#6b7280;line-height:1.7}
+.mods-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.mc{background:#111827;border:1px solid #1e293b;border-radius:13px;padding:20px;transition:border-color .2s}
+.mc:hover{border-color:#334155}
+.mc.on{border-color:rgba(79,70,229,.3)}
+.mc-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.mc-icon{width:42px;height:42px;border-radius:10px;background:#1f2937;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.mc.on .mc-icon{background:rgba(79,70,229,.12)}
+.mc-info h4{font-size:15px;font-weight:700;color:#f9fafb;margin-bottom:4px}
+.mc-info p{font-size:12px;color:#6b7280;line-height:1.5}
+.mc-foot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #1e293b;padding-top:14px}
+.status-on{display:flex;align-items:center;gap:6px;color:#10b981;font-size:13px;font-weight:600}
+.status-off{display:flex;align-items:center;gap:6px;color:#6b7280;font-size:13px;font-weight:600}
+.sdot{width:8px;height:8px;border-radius:50%}
+.sdot.green{background:#10b981}
+.sdot.gray{background:#4b5563}
+.btn-enable{background:#4f46e5;color:#fff;border:none;padding:7px 18px;border-radius:7px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s}
+.btn-enable:hover{background:#4338ca}
+.btn-disable{background:#1f2937;color:#9ca3af;border:1px solid #374151;padding:7px 18px;border-radius:7px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-disable:hover{background:#374151;color:#f9fafb}
+</style>
+<div class="page">
+  <h1 class="page-title">⊙ Module Settings</h1>
+  <p class="page-desc">Customize your workspace. Enable or disable features as your needs change.</p>
+  <div class="info-box">
+    <div class="info-box-head">🛡 Safe Data Preservation</div>
+    <p>Don't worry about losing your work! Disabling a module only hides it from your workspace. All your underlying data is safely preserved in the database and will be exactly as you left it when you re-enable the module.</p>
+  </div>
+  <div class="mods-grid">
+    <% modules.forEach(function(mod){ %>
+    <div class="mc <%= mod.is_enabled ? 'on' : '' %>">
+      <div class="mc-top">
+        <div class="mc-icon">
+          <%= mod.slug==='tasks'?'≡':mod.slug==='study'?'📖':mod.slug==='finance'?'💰':mod.slug==='health'?'❤':mod.slug==='projects'?'📊':'✏' %>
+        </div>
+        <div class="mc-info">
+          <h4><%= mod.name %></h4>
+          <p><%= mod.description %></p>
+        </div>
+      </div>
+      <div class="mc-foot">
+        <% if(mod.is_enabled){ %>
+          <div class="status-on"><div class="sdot green"></div> Enabled</div>
+          <form method="POST" action="/settings/toggle/<%= mod.id %>">
+            <button type="submit" class="btn-disable">Disable</button>
+          </form>
+        <% } else { %>
+          <div class="status-off"><div class="sdot gray"></div> Disabled</div>
+          <form method="POST" action="/settings/toggle/<%= mod.id %>">
+            <button type="submit" class="btn-enable">Enable</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</div>
+<%- include('footer') %>

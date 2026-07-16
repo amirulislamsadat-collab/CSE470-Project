@@ -1,0 +1,49 @@
+<%- include('header') %>
+<style>
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.auth-card{background:#111827;border:1px solid #1e293b;border-radius:18px;padding:44px 40px;width:100%;max-width:420px;box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.auth-icon-wrap{text-align:center;margin-bottom:28px}
+.auth-icon{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#4f46e5,#818cf8);display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;font-weight:900;margin:0 auto 16px}
+.auth-title{font-size:22px;font-weight:800;color:#f9fafb;margin-bottom:4px}
+.auth-sub{color:#6b7280;font-size:13px}
+.form-grp{margin-bottom:18px}
+.form-lbl{display:block;font-size:11px;font-weight:700;color:#6b7280;margin-bottom:7px;text-transform:uppercase;letter-spacing:.7px}
+.form-inp{width:100%;padding:12px 14px;background:#0d1321;border:1px solid #1e293b;border-radius:9px;color:#f9fafb;font-family:inherit;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s}
+.form-inp:focus{border-color:#4f46e5;box-shadow:0 0 0 3px rgba(79,70,229,.18)}
+.form-inp::placeholder{color:#374151}
+.btn-auth{width:100%;padding:13px;background:#4f46e5;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:6px}
+.btn-auth:hover{background:#4338ca}
+.auth-foot{text-align:center;margin-top:20px;font-size:13px;color:#6b7280}
+.auth-foot a{color:#818cf8;text-decoration:none;font-weight:600}
+.auth-foot a:hover{text-decoration:underline}
+</style>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-icon-wrap">
+      <div class="auth-icon">∞</div>
+      <div class="auth-title">Create Account</div>
+      <div class="auth-sub">Set up your ALMS workspace</div>
+    </div>
+    <form method="POST" action="/register">
+      <div class="form-grp">
+        <label class="form-lbl">Full Name</label>
+        <input class="form-inp" type="text" name="full_name" placeholder="Your full name" required>
+      </div>
+      <div class="form-grp">
+        <label class="form-lbl">Email Address</label>
+        <input class="form-inp" type="email" name="email" placeholder="you@example.com" required>
+      </div>
+      <div class="form-grp">
+        <label class="form-lbl">Password</label>
+        <input class="form-inp" type="password" name="password" placeholder="Create a password" required>
+      </div>
+      <div class="form-grp">
+        <label class="form-lbl">Confirm Password</label>
+        <input class="form-inp" type="password" name="confirm_password" placeholder="Repeat your password" required>
+      </div>
+      <button type="submit" class="btn-auth">Create Account</button>
+    </form>
+    <div class="auth-foot">Already have an account? <a href="/login">Sign in</a></div>
+  </div>
+</div>
+<%- include('footer') %>
