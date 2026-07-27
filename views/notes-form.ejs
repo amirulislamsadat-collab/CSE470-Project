@@ -1,0 +1,21 @@
+<%- include('header', { currentPath: '/notes' }) %>
+<style>.page{padding:32px;max-width:760px;margin:0 auto}.card{background:#111827;border:1px solid #1e293b;border-radius:14px;padding:24px}.fg{margin-bottom:16px}.fg label{display:block;font-size:12px;color:#9ca3af;margin-bottom:7px}.fg input,.fg textarea{width:100%;background:#0b0f19;border:1px solid #374151;color:#f9fafb;padding:10px;border-radius:8px}.fg textarea{min-height:160px}.actions{display:flex;gap:10px;justify-content:flex-end}.btn{padding:10px 14px;border-radius:8px;border:1px solid #374151;text-decoration:none}.primary{background:#4f46e5;color:#fff;border:none}</style>
+<div class="page">
+  <a href="/notes" style="color:#9ca3af;text-decoration:none">← Back to Notes</a>
+  <form class="card" method="POST" action="<%= formAction %>">
+    <h1 style="margin-bottom:20px"><%= pageTitle %></h1>
+    <div class="fg">
+      <label>Title *</label>
+      <input type="text" name="title" required value="<%= note ? note.title : '' %>">
+    </div>
+    <div class="fg">
+      <label>Content</label>
+      <textarea name="content"><%= note ? note.content : '' %></textarea>
+    </div>
+    <div class="actions">
+      <a class="btn" href="/notes">Cancel</a>
+      <button class="btn primary" type="submit">Save Note</button>
+    </div>
+  </form>
+</div>
+<%- include('footer') %>

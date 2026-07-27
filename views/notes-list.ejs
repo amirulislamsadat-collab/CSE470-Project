@@ -1,0 +1,39 @@
+<%- include('header', { currentPath: '/notes' }) %>
+<style>
+.page{padding:32px;max-width:1100px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.btn{background:#4f46e5;color:#fff;text-decoration:none;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600}.search{display:flex;gap:8px;margin-bottom:20px}.search input{flex:1;background:#111827;border:1px solid #1e293b;color:#f9fafb;padding:10px 12px;border-radius:8px}.search button{background:#1f2937;border:1px solid #374151;color:#e5e7eb;padding:10px 14px;border-radius:8px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}.card{background:#111827;border:1px solid #1e293b;border-radius:12px;padding:16px}.meta{font-size:12px;color:#9ca3af;margin-bottom:8px}.title{font-size:16px;font-weight:700;color:#f9fafb;margin-bottom:8px}.content{font-size:14px;color:#d1d5db;white-space:pre-wrap;min-height:48px}.actions{display:flex;gap:8px;margin-top:12px}.actions a,.actions button{background:#0b0f19;border:1px solid #374151;color:#e5e7eb;padding:6px 10px;border-radius:6px;font-size:12px;text-decoration:none;cursor:pointer}.actions .danger{color:#f87171;border-color:#7f1d1d}.pinned{color:#fbbf24;font-size:12px;font-weight:600}
+</style>
+<div class="page">
+  <div class="top">
+    <div>
+      <h1>Notes</h1>
+      <div style="color:#9ca3af;font-size:13px">Create, search, pin, and manage your notes.</div>
+    </div>
+    <a class="btn" href="/notes/new">+ New Note</a>
+  </div>
+
+  <form class="search" method="GET" action="/notes">
+    <input type="text" name="q" placeholder="Search notes by title/content" value="<%= q || '' %>">
+    <button type="submit">Search</button>
+  </form>
+
+  <% if(notes.length){ %>
+    <div class="grid">
+      <% notes.forEach(note => { %>
+        <div class="card">
+          <div class="meta"><%= new Date(note.updated_at).toLocaleString() %></div>
+          <div class="title"><%= note.title %></div>
+          <% if(note.is_pinned){ %><div class="pinned">📌 Pinned</div><% } %>
+          <div class="content"><%= note.content || 'No content' %></div>
+          <div class="actions">
+            <a href="/notes/edit/<%= note.id %>">Edit</a>
+            <form method="POST" action="/notes/pin/<%= note.id %>"><button type="submit"><%= note.is_pinned ? 'Unpin' : 'Pin' %></button></form>
+            <form method="POST" action="/notes/delete/<%= note.id %>" onsubmit="return confirm('Delete this note?');"><button type="submit" class="danger">Delete</button></form>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div style="background:#111827;border:1px solid #1e293b;border-radius:12px;padding:28px;color:#9ca3af">No notes found.</div>
+  <% } %>
+</div>
+<%- include('footer') %>
