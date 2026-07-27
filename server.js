@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const rateLimit = require('express-rate-limit');
 const path    = require('path');
 const db      = require('./config/db');
 
@@ -22,6 +23,12 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false
+}));
 
 app.use(session({
   secret: 'alms-secret-key-470',
