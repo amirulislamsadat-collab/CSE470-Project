@@ -165,7 +165,7 @@
     <div class="mc <%= mod.is_enabled ? 'on' : '' %>">
       <div class="mc-top">
         <div class="mc-icon">
-          <%= mod.slug==='tasks'?'≡':mod.slug==='study'?'📖':mod.slug==='finance'?'💰':mod.slug==='health'?'❤':mod.slug==='projects'?'📊':'✏' %>
+          <%= mod.slug==='tasks'?'≡':mod.slug==='study'?'📖':mod.slug==='finance'?'💰':mod.slug==='health'?'❤':mod.slug==='projects'?'📊':mod.slug==='notes'?'📝':mod.slug==='calendar'?'📅':mod.slug==='reminders'?'⏰':mod.slug==='alarms'?'🔔':mod.slug==='subjects'?'📘':'✏' %>
         </div>
         <div class="mc-info">
           <h4><%= mod.name %></h4>

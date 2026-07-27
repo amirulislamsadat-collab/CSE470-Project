@@ -6,6 +6,12 @@ const db      = require('./config/db');
 const authRoutes      = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const taskRoutes      = require('./routes/taskRoutes');
+const notesRoutes     = require('./routes/notesRoutes');
+const calendarRoutes  = require('./routes/calendarRoutes');
+const reminderRoutes  = require('./routes/reminderRoutes');
+const alarmRoutes     = require('./routes/alarmRoutes');
+const subjectRoutes   = require('./routes/subjectRoutes');
+const notificationMiddleware = require('./middleware/notificationMiddleware');
 
 const app  = express();
 const PORT = 3000;
@@ -32,10 +38,16 @@ app.use((req, res, next) => {
   delete req.session.error;
   next();
 });
+app.use(notificationMiddleware);
 
 app.use('/', authRoutes);
 app.use('/', dashboardRoutes);
 app.use('/', taskRoutes);
+app.use('/', notesRoutes);
+app.use('/', calendarRoutes);
+app.use('/', reminderRoutes);
+app.use('/', alarmRoutes);
+app.use('/', subjectRoutes);
 
 app.get('/', (req, res) => {
   if (req.session.user) {
@@ -48,6 +60,11 @@ app.get('/', (req, res) => {
 async function initDB() {
   try {
     // Drop in safe dependency order
+    await db.query('DROP TABLE IF EXISTS notes');
+    await db.query('DROP TABLE IF EXISTS calendar_events');
+    await db.query('DROP TABLE IF EXISTS reminders');
+    await db.query('DROP TABLE IF EXISTS alarms');
+    await db.query('DROP TABLE IF EXISTS subjects');
     await db.query('DROP TABLE IF EXISTS tasks');
     await db.query('DROP TABLE IF EXISTS user_modules');
     await db.query('DROP TABLE IF EXISTS users');
@@ -104,7 +121,12 @@ async function initDB() {
       (3, 'Finance Tracker',  'finance',  'Monitor expenses, income, and maintain a personal budget',           'wallet'),
       (4, 'Health & Wellness','health',   'Track fitness goals, water intake, and wellness habits',             'heart'),
       (5, 'Project Board',    'projects', 'Manage projects with kanban boards and milestone tracking',          'project'),
-      (6, 'Personal Journal', 'journal',  'Write daily reflections, mood tracking, and personal notes',        'pen')
+      (6, 'Personal Journal', 'journal',  'Write daily reflections, mood tracking, and personal notes',        'pen'),
+      (7, 'Notes',            'notes',    'Capture, pin, and search your notes quickly',                        'note'),
+      (8, 'Calendar',         'calendar', 'Manage calendar events and detect scheduling conflicts',             'calendar'),
+      (9, 'Reminders',        'reminders','Track reminders with due date and time',                             'bell'),
+      (10, 'Alarms',          'alarms',   'Set recurring alarms with customizable schedules',                   'alarm'),
+      (11, 'Subjects',        'subjects', 'Manage your academic subjects and instructors',                      'subject')
     `);
 
     // Create user_modules
@@ -160,7 +182,83 @@ async function initDB() {
       )
     `);
 
-    console.log('✅ Database: All 6 tables created and seeded successfully.');
+    // Create notes
+    await db.query(`
+      CREATE TABLE notes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        content TEXT,
+        is_pinned TINYINT(1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // Create calendar events
+    await db.query(`
+      CREATE TABLE calendar_events (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        location VARCHAR(255),
+        start_time DATETIME NOT NULL,
+        end_time DATETIME NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // Create reminders
+    await db.query(`
+      CREATE TABLE reminders (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        message TEXT,
+        due_at DATETIME NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // Create alarms
+    await db.query(`
+      CREATE TABLE alarms (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        message TEXT,
+        frequency VARCHAR(20) NOT NULL DEFAULT 'daily',
+        days_of_week VARCHAR(64),
+        time_of_day TIME NOT NULL,
+        is_enabled TINYINT(1) DEFAULT 1,
+        last_triggered_at DATETIME DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // Create subjects
+    await db.query(`
+      CREATE TABLE subjects (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        code VARCHAR(64),
+        instructor VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    console.log('✅ Database: ALMS tables created and seeded successfully.');
   } catch (err) {
     console.error('!!! DB INIT CRASH !!! ->', err.message);
   }
