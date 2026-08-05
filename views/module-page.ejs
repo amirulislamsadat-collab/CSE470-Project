@@ -1,0 +1,26 @@
+<%- include('header', { currentPath: '/modules' }) %>
+<style>
+.page{padding:40px 32px;max-width:900px;margin:0 auto}
+.card{background:#111827;border:1px solid #1e293b;border-radius:16px;padding:32px}
+.title{font-size:28px;font-weight:800;color:#f9fafb;margin-bottom:12px}
+.desc{color:#9ca3af;line-height:1.7;font-size:15px}
+.note{margin-top:24px;padding:16px 18px;border-radius:12px;background:rgba(79,70,229,.08);border:1px solid rgba(79,70,229,.2);color:#c7d2fe}
+.actions{margin-top:24px;display:flex;gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:600}
+.primary{background:#4f46e5;color:#fff}
+.secondary{background:#1f2937;color:#e5e7eb;border:1px solid #374151}
+</style>
+<div class="page">
+  <div class="card">
+    <div class="title"><%= module.name %></div>
+    <div class="desc"><%= module.description %></div>
+    <div class="note">
+      This module shell is connected to the MVC structure, but the detailed feature set for this workspace area is not implemented yet.
+    </div>
+    <div class="actions">
+      <a class="btn primary" href="/modules/settings">Module Settings</a>
+      <a class="btn secondary" href="/dashboard">Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+<%- include('footer') %>

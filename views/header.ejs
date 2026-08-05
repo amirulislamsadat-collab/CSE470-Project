@@ -16,6 +16,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:#0b0f19;color:#f9fa
 .nav-links a:hover,.nav-links a.active{color:#f9fafb;background:rgba(255,255,255,0.06)}
 .nav-links a .nav-icon{font-size:14px}
 .nav-right{display:flex;align-items:center;gap:12px}
+.notif-chip{background:#1f2937;border:1px solid #374151;color:#fbbf24;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:600}
 .user-chip{display:flex;align-items:center;gap:8px}
 .user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff}
 .user-name{font-size:13px;color:#d1d5db;font-weight:500}
@@ -37,9 +38,17 @@ body{font-family:'Inter',-apple-system,sans-serif;background:#0b0f19;color:#f9fa
 <ul class="nav-links">
   <li><a href="/dashboard" class="<%= (typeof currentPath !== 'undefined' && currentPath === '/dashboard') ? 'active' : '' %>"><span class="nav-icon">⊞</span> Dashboard</a></li>
   <li><a href="/tasks/hub" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/tasks')) ? 'active' : '' %>"><span class="nav-icon">≡</span> Tasks</a></li>
+  <li><a href="/notes" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/notes')) ? 'active' : '' %>"><span class="nav-icon">📝</span> Notes</a></li>
+  <li><a href="/calendar" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/calendar')) ? 'active' : '' %>"><span class="nav-icon">📅</span> Calendar</a></li>
+  <li><a href="/reminders" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/reminders')) ? 'active' : '' %>"><span class="nav-icon">⏰</span> Reminders</a></li>
+  <li><a href="/alarms" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/alarms')) ? 'active' : '' %>"><span class="nav-icon">🔔</span> Alarms</a></li>
+  <li><a href="/subjects" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/subjects')) ? 'active' : '' %>"><span class="nav-icon">📘</span> Subjects</a></li>
   <li><a href="/modules/settings" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/modules')) ? 'active' : '' %>"><span class="nav-icon">⚙</span> Modules</a></li>
 </ul>
   <div class="nav-right">
+    <% if(dueNotifications && dueNotifications.length){ %>
+      <span class="notif-chip">🔔 <%= dueNotifications.length %> due</span>
+    <% } %>
     <div class="user-chip">
       <div class="user-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
       <span class="user-name"><%= user.name %></span>
@@ -49,6 +58,16 @@ body{font-family:'Inter',-apple-system,sans-serif;background:#0b0f19;color:#f9fa
     </a>
   </div>
 </nav>
+<% } %>
+<% if(user && dueNotifications && dueNotifications.length){ %>
+<div class="flash-wrap">
+  <div class="flash" style="background:rgba(245,158,11,.08);color:#fbbf24;border:1px solid rgba(245,158,11,.25)">
+    🔔 You have <strong><%= dueNotifications.length %></strong> due notification(s):
+    <% dueNotifications.slice(0, 3).forEach(function(item, idx){ %>
+      <span><%= idx ? ' | ' : '' %><%= item.type %>: <%= item.title %></span>
+    <% }) %>
+  </div>
+</div>
 <% } %>
 <% if(success){ %>
 <div class="flash-wrap"><div class="flash flash-success">✅ <%- success %></div></div>
