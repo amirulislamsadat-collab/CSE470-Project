@@ -41,3 +41,28 @@ exports.toggleModule = async (req, res) => {
     res.redirect('/modules/settings');
   }
 };
+
+exports.getModulePage = async (req, res) => {
+  if (!req.session.user) return res.redirect('/login');
+  try {
+    const [rows] = await db.query(
+      'SELECT slug, name, description FROM modules WHERE slug = ?',
+      [req.params.slug]
+    );
+
+    if (!rows.length) {
+      req.session.error = 'Module not found.';
+      return res.redirect('/dashboard');
+    }
+
+    const mod = rows[0];
+    res.render('module-page', {
+      user: req.session.user,
+      module: mod
+    });
+  } catch (err) {
+    console.error('Module page error:', err);
+    req.session.error = 'Failed to load module.';
+    res.redirect('/dashboard');
+  }
+};
