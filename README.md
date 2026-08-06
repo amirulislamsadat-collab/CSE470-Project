@@ -1,114 +1,59 @@
-[npm-image]: https://img.shields.io/npm/v/mysql2.svg
-[npm-url]: https://npmjs.com/package/mysql2
-[node-version-image]: https://img.shields.io/node/v/mysql2.svg
-[node-version-url]: https://nodejs.org/en/download
-[downloads-image]: https://img.shields.io/npm/dm/mysql2.svg
-[downloads-url]: https://npmjs.com/package/mysql2
-[license-url]: https://github.com/sidorares/node-mysql2/blob/master/License
-[license-image]: https://img.shields.io/npm/l/mysql2.svg?maxAge=2592000
-[node-mysql]: https://github.com/mysqljs/mysql
-[mysqljs]: https://github.com/mysqljs
-[mysql-native]: https://github.com/sidorares/nodejs-mysql-native
-[sidorares]: https://github.com/sidorares
-[TooTallNate]: https://gist.github.com/TooTallNate
-[starttls.js]: https://gist.github.com/TooTallNate/848444
-[node-mariasql]: https://github.com/mscdex/node-mariasql
-[contributors]: https://github.com/sidorares/node-mysql2/graphs/contributors
-[contributing]: https://github.com/sidorares/node-mysql2/blob/master/Contributing.md
-[docs-base]: https://sidorares.github.io/node-mysql2/docs
-[docs-base-zh-CN]: https://sidorares.github.io/node-mysql2/zh-CN/docs
-[docs-base-pt-BR]: https://sidorares.github.io/node-mysql2/pt-BR/docs
-[docs-prepared-statements]: https://sidorares.github.io/node-mysql2/docs/documentation/prepared-statements
-[docs-mysql-server]: https://sidorares.github.io/node-mysql2/docs/documentation/mysql-server
-[docs-promise-wrapper]: https://sidorares.github.io/node-mysql2/docs/documentation/promise-wrapper
-[docs-authentication-switch]: https://sidorares.github.io/node-mysql2/docs/documentation/authentication-switch
-[docs-streams]: https://sidorares.github.io/node-mysql2/docs/documentation/extras
-[docs-typescript-docs]: https://sidorares.github.io/node-mysql2/docs/documentation/typescript-examples
-[docs-qs-pooling]: https://sidorares.github.io/node-mysql2/docs#using-connection-pools
-[docs-qs-first-query]: https://sidorares.github.io/node-mysql2/docs#first-query
-[docs-qs-using-prepared-statements]: https://sidorares.github.io/node-mysql2/docs#using-prepared-statements
-[docs-examples]: https://sidorares.github.io/node-mysql2/docs/examples
-[docs-faq]: https://sidorares.github.io/node-mysql2/docs/faq
-[docs-documentation]: https://sidorares.github.io/node-mysql2/docs/documentation
-[docs-contributing]: https://sidorares.github.io/node-mysql2/docs/contributing/website
-[coverage]: https://img.shields.io/codecov/c/github/sidorares/node-mysql2
-[coverage-url]: https://app.codecov.io/github/sidorares/node-mysql2
-[ci-url]: https://github.com/sidorares/node-mysql2/actions/workflows/ci-coverage.yml?query=branch%3Amaster
-[ci-image]: https://img.shields.io/github/actions/workflow/status/sidorares/node-mysql2/ci-coverage.yml?event=push&style=flat&label=CI&branch=master
+![Async Logo](https://raw.githubusercontent.com/caolan/async/master/logo/async-logo_readme.jpg)
 
-# MySQL2
+![Github Actions CI status](https://github.com/caolan/async/actions/workflows/ci.yml/badge.svg)
+[![NPM version](https://img.shields.io/npm/v/async.svg)](https://www.npmjs.com/package/async)
+[![Coverage Status](https://coveralls.io/repos/caolan/async/badge.svg?branch=master)](https://coveralls.io/r/caolan/async?branch=master)
+[![Join the chat at https://gitter.im/caolan/async](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/caolan/async?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![jsDelivr Hits](https://data.jsdelivr.com/v1/package/npm/async/badge?style=rounded)](https://www.jsdelivr.com/package/npm/async)
 
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
-[![Node.js Version][node-version-image]][node-version-url]
-[![GitHub Workflow Status (with event)][ci-image]][ci-url]
-[![Codecov][coverage]][coverage-url]
-[![License][license-image]][license-url]
+<!--
+|Linux|Windows|MacOS|
+|-|-|-|
+|[![Linux Build Status](https://dev.azure.com/caolanmcmahon/async/_apis/build/status/caolan.async?branchName=master&jobName=Linux&configuration=Linux%20node_10_x)](https://dev.azure.com/caolanmcmahon/async/_build/latest?definitionId=1&branchName=master) | [![Windows Build Status](https://dev.azure.com/caolanmcmahon/async/_apis/build/status/caolan.async?branchName=master&jobName=Windows&configuration=Windows%20node_10_x)](https://dev.azure.com/caolanmcmahon/async/_build/latest?definitionId=1&branchName=master) | [![MacOS Build Status](https://dev.azure.com/caolanmcmahon/async/_apis/build/status/caolan.async?branchName=master&jobName=OSX&configuration=OSX%20node_10_x)](https://dev.azure.com/caolanmcmahon/async/_build/latest?definitionId=1&branchName=master)| -->
 
-[English][docs-base] | [简体中文][docs-base-zh-CN] | [Português (BR)][docs-base-pt-BR]
+Async is a utility module which provides straight-forward, powerful functions for working with [asynchronous JavaScript](http://caolan.github.io/async/v3/global.html). Although originally designed for use with [Node.js](https://nodejs.org/) and installable via `npm i async`, it can also be used directly in the browser.  An ESM/MJS version is included in the main `async` package that should automatically be used with compatible bundlers such as Webpack and Rollup.
 
-> MySQL client for Node.js with focus on performance. Supports prepared statements, non-utf8 encodings, binary log protocol, compression, ssl [much more][docs-documentation].
+A pure ESM version of Async is available as [`async-es`](https://www.npmjs.com/package/async-es).
 
-**Table of Contents**
+For Documentation, visit <https://caolan.github.io/async/>
 
-- [History and Why MySQL2](#history-and-why-mysql2)
-- [Installation](#installation)
-- [Documentation](#documentation)
-- [Acknowledgements](#acknowledgements)
-- [Contributing](#contributing)
+*For Async v1.5.x documentation, go [HERE](https://github.com/caolan/async/blob/v1.5.2/README.md)*
 
-## History and Why MySQL2
 
-MySQL2 project is a continuation of [MySQL-Native][mysql-native]. Protocol parser code was rewritten from scratch and api changed to match popular [Node MySQL][node-mysql]. MySQL2 team is working together with [Node MySQL][node-mysql] team to factor out shared code and move it under [mysqljs][mysqljs] organization.
+```javascript
+// for use with Node-style callbacks...
+var async = require("async");
 
-MySQL2 is mostly API compatible with [Node MySQL][node-mysql] and supports majority of features. MySQL2 also offers these additional features:
+var obj = {dev: "/dev.json", test: "/test.json", prod: "/prod.json"};
+var configs = {};
 
-- Faster / Better Performance
-- [Prepared Statements][docs-prepared-statements]
-- MySQL Binary Log Protocol
-- [MySQL Server][docs-mysql-server]
-- Extended support for Encoding and Collation
-- [Promise Wrapper][docs-promise-wrapper]
-- Compression
-- SSL and [Authentication Switch][docs-authentication-switch]
-- [Custom Streams][docs-streams]
-- [Pooling][docs-qs-pooling]
-
-## Installation
-
-MySQL2 is free from native bindings and can be installed on Linux, Mac OS or Windows without any issues.
-
-```bash
-npm install --save mysql2
+async.forEachOf(obj, (value, key, callback) => {
+    fs.readFile(__dirname + value, "utf8", (err, data) => {
+        if (err) return callback(err);
+        try {
+            configs[key] = JSON.parse(data);
+        } catch (e) {
+            return callback(e);
+        }
+        callback();
+    });
+}, err => {
+    if (err) console.error(err.message);
+    // configs is now a map of JSON data
+    doSomethingWith(configs);
+});
 ```
 
-If you are using TypeScript, you will need to install `@types/node`.
+```javascript
+var async = require("async");
 
-```bash
-npm install --save-dev @types/node
+// ...or ES2017 async functions
+async.mapLimit(urls, 5, async function(url) {
+    const response = await fetch(url)
+    return response.body
+}, (err, results) => {
+    if (err) throw err
+    // results is now an array of the response bodies
+    console.log(results)
+})
 ```
-
-> For TypeScript documentation and examples, see [here][docs-typescript-docs].
-
-## Documentation
-
-- [Quickstart][docs-base]
-  - [First Query][docs-qs-first-query], [Using Prepared Statements][docs-qs-using-prepared-statements], [Using Connection Pools][docs-qs-pooling] and more.
-- [Documentation][docs-documentation]
-- [Examples][docs-examples]
-- [FAQ][docs-faq]
-
-## Acknowledgements
-
-- Internal protocol is written by [@sidorares][sidorares] [MySQL-Native][mysql-native].
-- Constants, SQL parameters interpolation, Pooling, `ConnectionConfig` class taken from [Node MySQL][node-mysql].
-- SSL upgrade code based on [@TooTallNate][TooTallNate] [code][starttls.js].
-- Secure connection / compressed connection api flags compatible to [MariaSQL][node-mariasql] client.
-- [Contributors][contributors].
-
-## Contributing
-
-Want to improve something in **MySQL2**?
-Please check [Contributing.md][contributing] for detailed instruction on how to get started.
-
-To contribute in **MySQL2 Documentation**, please visit the [Website Contributing Guidelines][docs-contributing] for detailed instruction on how to get started.
