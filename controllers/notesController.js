@@ -1,17 +1,13 @@
-const db = require('../config/db');
+// ============================================================
+// Controller: Notes — handles note CRUD (Feature 8)
+// ============================================================
+const Note = require('../models/Note');
 
 exports.getNotes = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   const q = (req.query.q || '').trim();
   try {
-    let query = `SELECT * FROM notes WHERE user_id = ?`;
-    const params = [req.session.user.id];
-    if (q) {
-      query += ' AND (title LIKE ? OR content LIKE ?)';
-      params.push(`%${q}%`, `%${q}%`);
-    }
-    query += ' ORDER BY is_pinned DESC, updated_at DESC';
-    const [notes] = await db.query(query, params);
+    const notes = await Note.findAllByUser(req.session.user.id, q || null);
     res.render('notes-list', { user: req.session.user, notes, q });
   } catch (err) {
     console.error('Notes list error:', err);
@@ -33,10 +29,7 @@ exports.postCreateNote = async (req, res) => {
     return res.redirect('/notes/new');
   }
   try {
-    await db.query(
-      'INSERT INTO notes (user_id, title, content) VALUES (?, ?, ?)',
-      [req.session.user.id, title.trim(), (content || '').trim()]
-    );
+    await Note.create(req.session.user.id, title.trim(), (content || '').trim());
     req.session.success = 'Note created successfully!';
     res.redirect('/notes');
   } catch (err) {
@@ -49,14 +42,14 @@ exports.postCreateNote = async (req, res) => {
 exports.getEditNote = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
-    const [rows] = await db.query('SELECT * FROM notes WHERE id = ? AND user_id = ?', [req.params.id, req.session.user.id]);
-    if (!rows.length) {
+    const note = await Note.findById(req.params.id, req.session.user.id);
+    if (!note) {
       req.session.error = 'Note not found.';
       return res.redirect('/notes');
     }
     res.render('notes-form', {
       user: req.session.user,
-      note: rows[0],
+      note,
       formAction: `/notes/edit/${req.params.id}`,
       pageTitle: 'Edit Note'
     });
@@ -75,10 +68,7 @@ exports.postEditNote = async (req, res) => {
     return res.redirect(`/notes/edit/${req.params.id}`);
   }
   try {
-    await db.query(
-      'UPDATE notes SET title = ?, content = ? WHERE id = ? AND user_id = ?',
-      [title.trim(), (content || '').trim(), req.params.id, req.session.user.id]
-    );
+    await Note.update(req.params.id, req.session.user.id, title.trim(), (content || '').trim());
     req.session.success = 'Note updated successfully!';
     res.redirect('/notes');
   } catch (err) {
@@ -91,10 +81,7 @@ exports.postEditNote = async (req, res) => {
 exports.togglePin = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
-    await db.query(
-      'UPDATE notes SET is_pinned = 1 - is_pinned WHERE id = ? AND user_id = ?',
-      [req.params.id, req.session.user.id]
-    );
+    await Note.togglePin(req.params.id, req.session.user.id);
     req.session.success = 'Note updated.';
   } catch (err) {
     console.error('Toggle pin error:', err);
@@ -106,7 +93,7 @@ exports.togglePin = async (req, res) => {
 exports.deleteNote = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
-    await db.query('DELETE FROM notes WHERE id = ? AND user_id = ?', [req.params.id, req.session.user.id]);
+    await Note.delete(req.params.id, req.session.user.id);
     req.session.success = 'Note deleted.';
   } catch (err) {
     console.error('Delete note error:', err);

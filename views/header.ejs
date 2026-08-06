@@ -3,75 +3,130 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ALMS - Adaptive Life Management System. Manage tasks, notes, calendar, reminders, alarms and subjects in one place.">
 <title>ALMS — Adaptive Life Management System</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',-apple-system,sans-serif;background:#0b0f19;color:#f9fafb;min-height:100vh;-webkit-font-smoothing:antialiased}
-.navbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:64px;background:rgba(10,14,26,0.96);backdrop-filter:blur(12px);border-bottom:1px solid #1e293b}
-.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#f9fafb;font-weight:700;font-size:1.1rem}
-.nav-logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#6366f1);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff}
-.nav-links{display:flex;align-items:center;gap:4px;list-style:none}
-.nav-links a{color:#9ca3af;text-decoration:none;font-size:13.5px;font-weight:500;padding:7px 14px;border-radius:8px;display:flex;align-items:center;gap:6px;transition:background .2s,color .2s}
-.nav-links a:hover,.nav-links a.active{color:#f9fafb;background:rgba(255,255,255,0.06)}
-.nav-links a .nav-icon{font-size:14px}
-.nav-right{display:flex;align-items:center;gap:12px}
-.notif-chip{background:#1f2937;border:1px solid #374151;color:#fbbf24;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:600}
-.user-chip{display:flex;align-items:center;gap:8px}
-.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff}
-.user-name{font-size:13px;color:#d1d5db;font-weight:500}
-.btn-logout{background:#1f2937;border:1px solid #374151;color:#f87171;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:6px}
-.btn-logout:hover{background:#ef444415;border-color:#ef4444}
-.flash-wrap{max-width:1100px;margin:16px auto 0;padding:0 20px}
-.flash{padding:13px 18px;border-radius:10px;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:10px}
-.flash-success{background:rgba(16,185,129,.1);color:#10b981;border:1px solid rgba(16,185,129,.2)}
-.flash-error{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2)}
-</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 <% if(user){ %>
-<nav class="navbar">
-  <a href="/dashboard" class="nav-brand">
-    <div class="nav-logo">∞</div>
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <a href="/dashboard" class="nav-brand" aria-label="ALMS Home">
+    <div class="nav-logo"><i class="fas fa-infinity" aria-hidden="true"></i></div>
     ALMS
   </a>
-<ul class="nav-links">
-  <li><a href="/dashboard" class="<%= (typeof currentPath !== 'undefined' && currentPath === '/dashboard') ? 'active' : '' %>"><span class="nav-icon">⊞</span> Dashboard</a></li>
-  <li><a href="/tasks/hub" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/tasks')) ? 'active' : '' %>"><span class="nav-icon">≡</span> Tasks</a></li>
-  <li><a href="/notes" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/notes')) ? 'active' : '' %>"><span class="nav-icon">📝</span> Notes</a></li>
-  <li><a href="/calendar" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/calendar')) ? 'active' : '' %>"><span class="nav-icon">📅</span> Calendar</a></li>
-  <li><a href="/reminders" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/reminders')) ? 'active' : '' %>"><span class="nav-icon">⏰</span> Reminders</a></li>
-  <li><a href="/alarms" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/alarms')) ? 'active' : '' %>"><span class="nav-icon">🔔</span> Alarms</a></li>
-  <li><a href="/subjects" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/subjects')) ? 'active' : '' %>"><span class="nav-icon">📘</span> Subjects</a></li>
-  <li><a href="/modules/settings" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/modules')) ? 'active' : '' %>"><span class="nav-icon">⚙</span> Modules</a></li>
-</ul>
+  <ul class="nav-links">
+    <li><a href="/dashboard" class="<%= (typeof currentPath !== 'undefined' && currentPath === '/dashboard') ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-th-large" aria-hidden="true"></i></span> Dashboard</a></li>
+    <li><a href="/tasks/hub" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/tasks')) ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-tasks" aria-hidden="true"></i></span> Tasks</a></li>
+    <li><a href="/notes" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/notes')) ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-sticky-note" aria-hidden="true"></i></span> Notes</a></li>
+    <li><a href="/calendar" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/calendar')) ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-calendar-alt" aria-hidden="true"></i></span> Calendar</a></li>
+    <li><a href="/reminders" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/reminders')) ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-clock" aria-hidden="true"></i></span> Reminders</a></li>
+    <li><a href="/alarms" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/alarms')) ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-bell" aria-hidden="true"></i></span> Alarms</a></li>
+    <li><a href="/subjects" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/subjects')) ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-book" aria-hidden="true"></i></span> Subjects</a></li>
+    <li><a href="/modules/settings" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/modules')) ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-cog" aria-hidden="true"></i></span> Modules</a></li>
+  </ul>
   <div class="nav-right">
     <% if(dueNotifications && dueNotifications.length){ %>
-      <span class="notif-chip">🔔 <%= dueNotifications.length %> due</span>
+      <span class="notif-chip" id="notifChip" title="<%= dueNotifications.length %> due notification(s)">
+        <i class="fas fa-bell" aria-hidden="true"></i> <%= dueNotifications.length %> due
+      </span>
+    <% } else { %>
+      <span class="notif-chip notif-chip-hidden" id="notifChip" style="display:none">
+        <i class="fas fa-bell" aria-hidden="true"></i> <span id="notifCount">0</span> due
+      </span>
     <% } %>
     <div class="user-chip">
-      <div class="user-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+      <div class="user-avatar" aria-hidden="true"><%= user.name.charAt(0).toUpperCase() %></div>
       <span class="user-name"><%= user.name %></span>
     </div>
     <a href="/logout" style="text-decoration:none">
-      <button class="btn-logout">↩ Logout</button>
+      <button class="btn-logout" id="logoutBtn"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</button>
     </a>
   </div>
 </nav>
 <% } %>
+
 <% if(user && dueNotifications && dueNotifications.length){ %>
-<div class="flash-wrap">
-  <div class="flash" style="background:rgba(245,158,11,.08);color:#fbbf24;border:1px solid rgba(245,158,11,.25)">
-    🔔 You have <strong><%= dueNotifications.length %></strong> due notification(s):
+<div class="flash-wrap" id="notifBanner">
+  <div class="flash flash-warning" role="alert">
+    <i class="fas fa-bell" aria-hidden="true"></i>
+    <strong>You have <%= dueNotifications.length %> due notification(s):</strong>
     <% dueNotifications.slice(0, 3).forEach(function(item, idx){ %>
-      <span><%= idx ? ' | ' : '' %><%= item.type %>: <%= item.title %></span>
+      <span><%= idx ? ' &nbsp;|&nbsp; ' : '&nbsp;' %><i class="fas fa-<%= item.type === 'alarm' ? 'bell' : 'clock' %>" aria-hidden="true"></i> <%= item.title %></span>
     <% }) %>
   </div>
 </div>
 <% } %>
+
 <% if(success){ %>
-<div class="flash-wrap"><div class="flash flash-success">✅ <%- success %></div></div>
+<div class="flash-wrap"><div class="flash flash-success" role="status"><i class="fas fa-check-circle" aria-hidden="true"></i> <%- success %></div></div>
 <% } %>
 <% if(error){ %>
-<div class="flash-wrap"><div class="flash flash-error">⚠ <%- error %></div></div>
+<div class="flash-wrap"><div class="flash flash-error" role="alert"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i> <%- error %></div></div>
+<% } %>
+
+<% if(user){ %>
+<script>
+(function() {
+  // Request browser notification permission
+  if ("Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission();
+  }
+
+  // Show native browser notifications for due items
+  <% if(typeof dueNotifications !== 'undefined' && dueNotifications && dueNotifications.length){ %>
+    if ("Notification" in window && Notification.permission === "granted") {
+      <% dueNotifications.forEach(function(item){ %>
+        new Notification("ALMS <%= item.type === 'alarm' ? 'Alarm' : 'Reminder' %>", {
+          body: "<%= item.title %> — due at <%= item.time %>",
+          icon: "/favicon.ico"
+        });
+      <% }) %>
+    }
+  <% } %>
+
+  // Client-side polling: check for new notifications every 60 seconds
+  // without requiring a full page refresh
+  function pollNotifications() {
+    fetch('/api/notifications')
+      .then(function(r){ return r.json(); })
+      .then(function(data) {
+        var chip = document.getElementById('notifChip');
+        var banner = document.getElementById('notifBanner');
+        if (data && data.count > 0) {
+          if (chip) {
+            chip.style.display = 'flex';
+            var countEl = chip.querySelector('#notifCount');
+            if (countEl) countEl.textContent = data.count;
+            else chip.innerHTML = '<i class="fas fa-bell"></i> ' + data.count + ' due';
+          }
+          if (!banner && data.items && data.items.length) {
+            var wrap = document.createElement('div');
+            wrap.className = 'flash-wrap';
+            wrap.id = 'notifBanner';
+            var msg = data.items.slice(0,3).map(function(i){
+              return '<i class="fas fa-' + (i.type==='alarm'?'bell':'clock') + '"></i> ' + i.title;
+            }).join(' &nbsp;|&nbsp; ');
+            wrap.innerHTML = '<div class="flash flash-warning" role="alert"><i class="fas fa-bell"></i> <strong>' + data.count + ' notification(s):</strong> ' + msg + '</div>';
+            var navbar = document.querySelector('.navbar');
+            if (navbar) navbar.insertAdjacentElement('afterend', wrap);
+          }
+          if ("Notification" in window && Notification.permission === "granted") {
+            data.items.forEach(function(item) {
+              new Notification("ALMS " + (item.type === 'alarm' ? 'Alarm' : 'Reminder'), {
+                body: item.title + " — due at " + item.time,
+                icon: "/favicon.ico"
+              });
+            });
+          }
+        }
+      })
+      .catch(function(){});
+  }
+
+  // Poll every 60 seconds
+  setInterval(pollNotifications, 60000);
+})();
+</script>
 <% } %>

@@ -1,4 +1,9 @@
-const db = require('../config/db');
+// ============================================================
+// Middleware: Notification — checks due reminders/alarms (Feature 13)
+// Uses Reminder and Alarm models (proper MVC)
+// ============================================================
+const Reminder = require('../models/Reminder');
+const Alarm    = require('../models/Alarm');
 
 const DAY_CODES = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
 
@@ -19,21 +24,9 @@ module.exports = async (req, res, next) => {
 
   try {
     const userId = req.session.user.id;
-    const [dueReminders] = await db.query(
-      `SELECT id, title, due_at
-       FROM reminders
-       WHERE user_id = ? AND due_at <= NOW() AND notified_at IS NULL
-       ORDER BY due_at ASC
-       LIMIT 5`,
-      [userId]
-    );
+    const dueReminders = await Reminder.findDue(userId, 5);
 
-    const [alarms] = await db.query(
-      `SELECT id, title, frequency, days_of_week, time_of_day, last_triggered_at
-       FROM alarms
-       WHERE user_id = ? AND is_enabled = 1`,
-      [userId]
-    );
+    const alarms = await Alarm.findEnabledByUser(userId);
 
     const now = new Date();
     const nowHHMM = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -54,7 +47,7 @@ module.exports = async (req, res, next) => {
       if (alreadyTriggeredToday) continue;
 
       dueAlarms.push(alarm);
-      await db.query('UPDATE alarms SET last_triggered_at = NOW() WHERE id = ? AND user_id = ?', [alarm.id, userId]);
+      await Alarm.markTriggered(alarm.id, userId);
     }
 
     res.locals.dueNotifications = [
@@ -64,13 +57,7 @@ module.exports = async (req, res, next) => {
 
     if (dueReminders.length) {
       const reminderIds = dueReminders.map(rem => rem.id);
-      const placeholders = reminderIds.map(() => '?').join(',');
-      await db.query(
-        `UPDATE reminders
-         SET notified_at = NOW()
-         WHERE user_id = ? AND id IN (${placeholders})`,
-        [userId].concat(reminderIds)
-      );
+      await Reminder.markNotified(userId, reminderIds);
     }
   } catch (err) {
     console.error('Notification middleware error:', err);

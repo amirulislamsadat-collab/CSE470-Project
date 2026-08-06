@@ -1,4 +1,7 @@
-const db = require('../config/db');
+// ============================================================
+// Controller: Alarm — handles alarm CRUD (Feature 12)
+// ============================================================
+const Alarm = require('../models/Alarm');
 
 function normalizeAlarm(body) {
   const days = Array.isArray(body.days_of_week) ? body.days_of_week : (body.days_of_week ? [body.days_of_week] : []);
@@ -21,10 +24,7 @@ function validateAlarm(alarm) {
 exports.getAlarms = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
-    const [alarms] = await db.query(
-      'SELECT * FROM alarms WHERE user_id = ? ORDER BY time_of_day ASC',
-      [req.session.user.id]
-    );
+    const alarms = await Alarm.findAllByUser(req.session.user.id);
     res.render('alarms-list', { user: req.session.user, alarms });
   } catch (err) {
     console.error('Alarm list error:', err);
@@ -48,10 +48,7 @@ exports.postCreateAlarm = async (req, res) => {
   }
 
   try {
-    await db.query(
-      'INSERT INTO alarms (user_id, title, message, frequency, days_of_week, time_of_day) VALUES (?, ?, ?, ?, ?, ?)',
-      [req.session.user.id, alarm.title, alarm.message, alarm.frequency, alarm.days_of_week || null, alarm.time_of_day]
-    );
+    await Alarm.create(req.session.user.id, alarm);
     req.session.success = 'Alarm created successfully!';
     res.redirect('/alarms');
   } catch (err) {
@@ -64,14 +61,14 @@ exports.postCreateAlarm = async (req, res) => {
 exports.getEditAlarm = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
-    const [rows] = await db.query('SELECT * FROM alarms WHERE id = ? AND user_id = ?', [req.params.id, req.session.user.id]);
-    if (!rows.length) {
+    const alarm = await Alarm.findById(req.params.id, req.session.user.id);
+    if (!alarm) {
       req.session.error = 'Alarm not found.';
       return res.redirect('/alarms');
     }
     res.render('alarms-form', {
       user: req.session.user,
-      alarm: rows[0],
+      alarm,
       formAction: `/alarms/edit/${req.params.id}`,
       pageTitle: 'Edit Alarm'
     });
@@ -92,12 +89,7 @@ exports.postEditAlarm = async (req, res) => {
   }
 
   try {
-    await db.query(
-      `UPDATE alarms
-       SET title = ?, message = ?, frequency = ?, days_of_week = ?, time_of_day = ?
-       WHERE id = ? AND user_id = ?`,
-      [alarm.title, alarm.message, alarm.frequency, alarm.days_of_week || null, alarm.time_of_day, req.params.id, req.session.user.id]
-    );
+    await Alarm.update(req.params.id, req.session.user.id, alarm);
     req.session.success = 'Alarm updated successfully!';
     res.redirect('/alarms');
   } catch (err) {
@@ -110,7 +102,7 @@ exports.postEditAlarm = async (req, res) => {
 exports.deleteAlarm = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
-    await db.query('DELETE FROM alarms WHERE id = ? AND user_id = ?', [req.params.id, req.session.user.id]);
+    await Alarm.delete(req.params.id, req.session.user.id);
     req.session.success = 'Alarm deleted.';
   } catch (err) {
     console.error('Delete alarm error:', err);

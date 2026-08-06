@@ -1,252 +1,10 @@
 <%- include('header', { currentPath: '/dashboard' }) %>
-<style>
-.page { padding: 36px 32px; max-width: 1100px; margin: 0 auto; }
-.greeting-card {
-  background: linear-gradient(135deg, #111827, #131c2d);
-  border: 1px solid #1e293b;
-  border-radius: 12px;
-  padding: 32px;
-  margin-bottom: 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.greeting-left h1 {
-  font-size: 26px;
-  font-weight: 700;
-  color: #f9fafb;
-  margin-bottom: 12px;
-}
-.greeting-left p {
-  color: #9ca3af;
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-.role-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #1f2937;
-  color: #94a3b8;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-}
-.date-display {
-  text-align: right;
-}
-.date-day {
-  font-size: 16px;
-  color: #f9fafb;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-.date-full {
-  color: #9ca3af;
-  font-size: 13px;
-}
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 36px;
-}
-.stat-card {
-  background: #111827;
-  border: 1px solid #1e293b;
-  border-radius: 12px;
-  padding: 24px 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.stat-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.stat-icon.total { background: rgba(99, 102, 241, 0.1); }
-.stat-icon.total svg { fill: #818cf8; width: 22px; height: 22px; }
-.stat-icon.completed { background: rgba(16, 185, 129, 0.1); }
-.stat-icon.completed svg { fill: #34d399; width: 22px; height: 22px; }
-.stat-icon.pending { background: rgba(245, 158, 11, 0.1); }
-.stat-icon.pending svg { fill: #fbbf24; width: 22px; height: 22px; }
-.stat-icon.high { background: rgba(239, 68, 68, 0.1); }
-.stat-icon.high svg { fill: #f87171; width: 22px; height: 22px; }
-
-.stat-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.stat-info .stat-val {
-  font-size: 24px;
-  font-weight: 700;
-  color: #f9fafb;
-  line-height: 1;
-}
-.stat-info .stat-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #f9fafb;
-}
-.section-badge {
-  background: #1f2937;
-  color: #9ca3af;
-  padding: 2px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-}
-.manage-btn {
-  background: #111827;
-  border: 1px solid #1e293b;
-  color: #e2e8f0;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.modules-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 36px;
-}
-.module-card {
-  background: #111827;
-  border: 1px solid #1e293b;
-  border-radius: 12px;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  text-decoration: none;
-  transition: border-color 0s;
-}
-.module-card:hover {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 1px #3b82f6;
-}
-.module-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 12px;
-}
-.module-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.03);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.module-icon svg {
-  fill: #94a3b8;
-  width: 20px;
-  height: 20px;
-}
-.module-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #f9fafb;
-  margin-top: 4px;
-}
-.module-desc {
-  color: #9ca3af;
-  font-size: 13px;
-  line-height: 1.5;
-  flex: 1;
-}
-.module-footer {
-  margin-top: 24px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 500;
-  color: #10b981;
-}
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 4px rgba(16,185,129,0.5);
-}
-
-.action-buttons {
-  display: flex;
-  gap: 12px;
-}
-.btn-primary {
-  background: #4f46e5;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.btn-secondary {
-  background: #111827;
-  color: #e2e8f0;
-  border: 1px solid #1e293b;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.empty-msg {
-  color: #9ca3af;
-  font-size: 14px;
-}
-.empty-msg a {
-  color: #818cf8;
-}
-</style>
-
 <div class="page">
   <div class="greeting-card">
     <div class="greeting-left">
-      <h1>Good <%= (new Date().getHours()<12?'Morning':new Date().getHours()<18?'Afternoon':'Evening') %>, <%= user.name %>! 👋</h1>
+      <h1>Good <%= (new Date().getHours()<12?'Morning':new Date().getHours()<18?'Afternoon':'Evening') %>, <%= user.name %>!</h1>
       <p>Here's your workspace overview. Stay productive and organized.</p>
-      <div class="role-badge">👤 <%= user.role %></div>
+      <div class="role-badge"><i class="fas fa-user-circle" aria-hidden="true"></i> <%= user.role %></div>
     </div>
     <div class="date-display">
       <div class="date-day"><%= new Date().toLocaleDateString('en-US',{weekday:'long'}) %></div>
@@ -257,7 +15,7 @@
   <div class="stats-grid">
     <div class="stat-card">
       <div class="stat-icon total">
-        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 7.5l-6-3v2l6 3 6-3v-2l-6 3zm0 4.5l-6-3v2l6 3 6-3v-2l-6 3z"/></svg>
+        <i class="fas fa-layer-group" aria-hidden="true"></i>
       </div>
       <div class="stat-info">
         <div class="stat-val"><%= stats.total %></div>
@@ -266,7 +24,7 @@
     </div>
     <div class="stat-card">
       <div class="stat-icon completed">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        <i class="fas fa-check-circle" aria-hidden="true"></i>
       </div>
       <div class="stat-info">
         <div class="stat-val"><%= stats.completed %></div>
@@ -275,7 +33,7 @@
     </div>
     <div class="stat-card">
       <div class="stat-icon pending">
-        <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+        <i class="fas fa-hourglass-half" aria-hidden="true"></i>
       </div>
       <div class="stat-info">
         <div class="stat-val"><%= stats.pending %></div>
@@ -284,7 +42,7 @@
     </div>
     <div class="stat-card">
       <div class="stat-icon high">
-        <svg viewBox="0 0 24 24"><path d="M11.71 1.76l-.42.49c-.28.33-.53.64-.75.92-2.12 2.76-3.54 5.37-3.54 7.83 0 1.25.29 2.45.83 3.52C6.54 12.35 6 10.74 6 9c0-.55-.45-1-1-1s-1 .45-1 1c0 3.15 1.25 6.03 3.32 8.16C8.89 23.77 10.42 24 12 24c1.19 0 2.29-.21 3.25-.56.12.33.45.56.81.56.49 0 .89-.39.89-.89 0-.17-.05-.33-.14-.46-1.57-2.31-2.02-4.93-1.46-7.85.1-.55-.38-1.02-.91-.88-2.62.68-3.9 2.5-3.69 5.39-1.28-.96-1.92-2.3-1.92-3.83 0-1.45.47-3.04 1.34-4.8.84-1.69 1.7-3.23 2.1-4.1.28-.62.08-1.35-.49-1.74-.48-.33-1.07-.36-1.56-.08z"/></svg>
+        <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
       </div>
       <div class="stat-info">
         <div class="stat-val"><%= stats.high_priority %></div>
@@ -295,30 +53,23 @@
 
   <div class="section-header">
     <div class="section-title">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+      <i class="fas fa-th-large" aria-hidden="true"></i>
       Active Modules <span class="section-badge"><%= modules.length %></span>
     </div>
-    <a href="/modules/settings" class="manage-btn">⚙ Manage</a>
+    <a href="/modules/settings" class="manage-btn"><i class="fas fa-cog" aria-hidden="true"></i> Manage</a>
   </div>
 
   <% if(modules && modules.length){ %>
   <div class="modules-grid">
     <% modules.forEach(function(mod){ %>
     <% const linkMap = { tasks:'/tasks/hub', notes:'/notes', calendar:'/calendar', reminders:'/reminders', alarms:'/alarms', subjects:'/subjects', study:'/modules/study', finance:'/modules/finance', health:'/modules/health', projects:'/modules/projects', journal:'/modules/journal' }; %>
+    <% const iconMap = { tasks:'fas fa-tasks', study:'fas fa-book-open', finance:'fas fa-wallet', health:'fas fa-heartbeat', projects:'fas fa-chart-bar', journal:'fas fa-pen', notes:'fas fa-sticky-note', calendar:'fas fa-calendar-alt', reminders:'fas fa-clock', alarms:'fas fa-bell', subjects:'fas fa-book' }; %>
     <% const link = linkMap[mod.slug] || '/modules/settings'; %>
-    <a href="<%= link %>" class="module-card">
+    <% const icon = iconMap[mod.slug] || 'fas fa-cube'; %>
+    <a href="<%= link %>" class="module-card" aria-label="<%= mod.name %> module">
       <div class="module-header">
         <div class="module-icon">
-          <% if(mod.slug==='tasks') { %><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg><% } %>
-          <% if(mod.slug==='study') { %><svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg><% } %>
-          <% if(mod.slug==='health') { %><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg><% } %>
-          <% if(mod.slug==='finance') { %><svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg><% } %>
-          <% if(mod.slug==='projects') { %><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg><% } %>
-          <% if(mod.slug==='journal') { %><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><% } %>
-          <% if(mod.slug==='notes') { %><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16l4-4h10c1.1 0 2-.9 2-2V8l-6-6z"/></svg><% } %>
-          <% if(mod.slug==='calendar') { %><svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .89-2 2v13c0 1.11.89 2 2 2h14c1.1 0 2-.89 2-2V6c0-1.11-.9-2-2-2zm0 15H5V9h14v10z"/></svg><% } %>
-          <% if(mod.slug==='reminders' || mod.slug==='alarms') { %><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6V11c0-3.07-1.63-5.64-4.5-6.32V4a1.5 1.5 0 0 0-3 0v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg><% } %>
-          <% if(mod.slug==='subjects') { %><svg viewBox="0 0 24 24"><path d="M18 2H8a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6l-4-4zM9 13h6v2H9v-2zm0-4h6v2H9V9z"/></svg><% } %>
+          <i class="<%= icon %>" aria-hidden="true"></i>
         </div>
         <div>
           <div class="module-title"><%= mod.name %></div>
@@ -336,13 +87,11 @@
   <% } %>
 
   <div class="action-buttons">
-    <a href="/tasks/new" class="btn-primary">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-      New Task
+    <a href="/tasks/new" class="btn primary" id="newTaskBtn">
+      <i class="fas fa-plus" aria-hidden="true"></i> New Task
     </a>
-    <a href="/tasks/hub" class="btn-secondary">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-      View All Tasks
+    <a href="/tasks/hub" class="btn secondary" id="viewTasksBtn">
+      <i class="fas fa-list" aria-hidden="true"></i> View All Tasks
     </a>
   </div>
 </div>

@@ -1,9 +1,29 @@
 <%- include('header', { currentPath: '/reminders' }) %>
-<style>.page{padding:32px;max-width:760px;margin:0 auto}.card{background:#111827;border:1px solid #1e293b;border-radius:14px;padding:24px}.fg{margin-bottom:16px}.fg label{display:block;font-size:12px;color:#9ca3af;margin-bottom:7px}.fg input,.fg textarea{width:100%;background:#0b0f19;border:1px solid #374151;color:#f9fafb;padding:10px;border-radius:8px}.fg textarea{min-height:100px}.actions{display:flex;gap:10px;justify-content:flex-end}.btn{padding:10px 14px;border-radius:8px;border:1px solid #374151;text-decoration:none}.primary{background:#4f46e5;color:#fff;border:none}</style>
-<div class="page"><a href="/reminders" style="color:#9ca3af;text-decoration:none">← Back to Reminders</a>
-<form class="card" method="POST" action="<%= formAction %>"><h1 style="margin-bottom:20px"><%= pageTitle %></h1>
-<div class="fg"><label>Title *</label><input type="text" name="title" required value="<%= reminder ? reminder.title : '' %>"></div>
-<div class="fg"><label>Due Date & Time *</label><input type="datetime-local" name="due_at" required value="<%= reminder ? new Date(reminder.due_at).toISOString().slice(0,16) : '' %>"></div>
-<div class="fg"><label>Message</label><textarea name="message"><%= reminder ? reminder.message || '' : '' %></textarea></div>
-<div class="actions"><a class="btn" href="/reminders">Cancel</a><button class="btn primary" type="submit">Save Reminder</button></div></form></div>
+<div class="page page-center">
+  <a href="/reminders" class="back-link"><i class="fas fa-arrow-left" aria-hidden="true"></i> Back to Reminders</a>
+  <div class="form-card card">
+    <div class="form-header">
+      <i class="fas fa-<%= reminder ? 'edit' : 'clock' %>" aria-hidden="true"></i>
+      <h1><%= pageTitle %></h1>
+    </div>
+    <form method="POST" action="<%= formAction %>" id="reminderForm">
+      <div class="fg">
+        <label for="reminderTitle">Title <span class="required">*</span></label>
+        <input id="reminderTitle" type="text" name="title" required placeholder="e.g. Submit assignment, Call dentist" value="<%= reminder ? reminder.title : '' %>">
+      </div>
+      <div class="fg">
+        <label for="reminderDue">Due Date & Time <span class="required">*</span></label>
+        <input id="reminderDue" type="datetime-local" name="due_at" required value="<%= reminder ? new Date(reminder.due_at).toISOString().slice(0,16) : '' %>">
+      </div>
+      <div class="fg">
+        <label for="reminderMsg">Message (Optional)</label>
+        <textarea id="reminderMsg" name="message" placeholder="Any additional details or notes..." rows="4"><%= reminder ? reminder.message || '' : '' %></textarea>
+      </div>
+      <div class="form-actions">
+        <a class="btn secondary" href="/reminders" id="cancelReminderBtn"><i class="fas fa-times" aria-hidden="true"></i> Cancel</a>
+        <button class="btn primary" type="submit" id="saveReminderBtn"><i class="fas fa-save" aria-hidden="true"></i> Save Reminder</button>
+      </div>
+    </form>
+  </div>
+</div>
 <%- include('footer') %>
