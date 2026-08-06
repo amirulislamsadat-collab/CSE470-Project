@@ -1,161 +1,15 @@
 <%- include('header', { currentPath: '/modules' }) %>
-<style>
-.page { padding: 40px 32px; max-width: 1100px; margin: 0 auto; }
-.top-header { margin-bottom: 32px; }
-.page-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 28px;
-  font-weight: 700;
-  color: #f9fafb;
-}
-.page-desc {
-  color: #9ca3af;
-  font-size: 14px;
-  margin-top: 8px;
-}
-.info-box {
-  background: #111827;
-  border-left: 4px solid #3b82f6;
-  border-radius: 8px;
-  padding: 16px 20px;
-  margin-bottom: 32px;
-}
-.info-box-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 15px;
-  font-weight: 700;
-  color: #60a5fa;
-  margin-bottom: 6px;
-}
-.info-box p {
-  font-size: 14px;
-  color: #9ca3af;
-  line-height: 1.6;
-}
-.mods-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-.mc {
-  background: #111827;
-  border: 1px solid #1e293b;
-  border-radius: 12px;
-  padding: 24px;
-}
-/* Ensure completely fixed on hover as requested */
-.mc:hover {
-  border-color: #1e293b;
-  box-shadow: none;
-  transform: none;
-}
-.mc.on {
-  border-color: rgba(79, 70, 229, 0.4);
-}
-.mc.on:hover {
-  border-color: rgba(79, 70, 229, 0.4);
-}
-.mc-top {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-.mc-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: #1f2937;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-.mc.on .mc-icon {
-  background: rgba(79, 70, 229, 0.15);
-}
-.mc-info h4 {
-  font-size: 16px;
-  font-weight: 700;
-  color: #f9fafb;
-  margin-bottom: 6px;
-}
-.mc-info p {
-  font-size: 13px;
-  color: #9ca3af;
-  line-height: 1.5;
-}
-.mc-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-top: 1px solid #1e293b;
-  padding-top: 16px;
-}
-.status-on {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #10b981;
-  font-size: 14px;
-  font-weight: 600;
-}
-.status-off {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #6b7280;
-  font-size: 14px;
-  font-weight: 600;
-}
-.sdot { width: 12px; height: 12px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.sdot.green { background: #10b981; }
-.sdot.green svg { width: 8px; height: 8px; stroke: #fff; stroke-width: 4; }
-.sdot.gray { background: #4b5563; }
-.sdot.gray svg { width: 8px; height: 8px; stroke: #fff; stroke-width: 4; }
-
-.btn-enable {
-  background: #4f46e5;
-  color: #fff;
-  border: none;
-  padding: 8px 20px;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.btn-disable {
-  background: transparent;
-  color: #9ca3af;
-  border: 1px solid #374151;
-  padding: 8px 20px;
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-}
-</style>
-
 <div class="page">
   <div class="top-header">
     <h1 class="page-title">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:#f9fafb"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-      Module Settings
+      <i class="fas fa-cog" aria-hidden="true"></i> Module Settings
     </h1>
     <p class="page-desc">Customize your workspace. Enable or disable features as your needs change.</p>
   </div>
   
   <div class="info-box">
     <div class="info-box-head">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-      Safe Data Preservation
+      <i class="fas fa-shield-alt" aria-hidden="true"></i> Safe Data Preservation
     </div>
     <p>Don't worry about losing your work! Disabling a module only hides it from your workspace. All your underlying data is safely preserved in the database and will be exactly as you left it when you re-enable the module.</p>
   </div>
@@ -165,7 +19,7 @@
     <div class="mc <%= mod.is_enabled ? 'on' : '' %>">
       <div class="mc-top">
         <div class="mc-icon">
-          <%= mod.slug==='tasks'?'≡':mod.slug==='study'?'📖':mod.slug==='finance'?'💰':mod.slug==='health'?'❤':mod.slug==='projects'?'📊':'✏' %>
+          <%- mod.slug==='tasks'?'<i class="fas fa-tasks"></i>':mod.slug==='study'?'<i class="fas fa-book-open"></i>':mod.slug==='finance'?'<i class="fas fa-money-bill-wave"></i>':mod.slug==='health'?'<i class="fas fa-heart"></i>':mod.slug==='projects'?'<i class="fas fa-chart-bar"></i>':mod.slug==='notes'?'<i class="fas fa-sticky-note"></i>':mod.slug==='calendar'?'<i class="fas fa-calendar-alt"></i>':mod.slug==='reminders'?'<i class="fas fa-clock"></i>':mod.slug==='alarms'?'<i class="fas fa-bell"></i>':mod.slug==='subjects'?'<i class="fas fa-book"></i>':'<i class="fas fa-pencil-alt"></i>' %>
         </div>
         <div class="mc-info">
           <h4><%= mod.name %></h4>
@@ -175,7 +29,7 @@
       <div class="mc-foot">
         <% if(mod.is_enabled){ %>
           <div class="status-on">
-            <div class="sdot green"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+            <div class="sdot green"><i class="fas fa-check" aria-hidden="true" style="font-size:10px;color:white;"></i></div>
             Enabled
           </div>
           <form method="POST" action="/modules/settings/toggle/<%= mod.id %>">
@@ -183,7 +37,7 @@
           </form>
         <% } else { %>
           <div class="status-off">
-            <div class="sdot gray"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+            <div class="sdot gray"><i class="fas fa-times" aria-hidden="true" style="font-size:10px;color:white;"></i></div>
             Disabled
           </div>
           <form method="POST" action="/modules/settings/toggle/<%= mod.id %>">

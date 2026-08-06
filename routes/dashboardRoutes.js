@@ -12,5 +12,6 @@ router.post('/setup/modules', setupCtrl.postModules);
 
 router.get('/modules/settings',              modCtrl.getSettings);
 router.post('/modules/settings/toggle/:id',  modCtrl.toggleModule);
+router.get('/modules/:slug',                 modCtrl.getModulePage);
 
 module.exports = router;
