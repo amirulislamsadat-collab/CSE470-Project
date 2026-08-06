@@ -1,12 +1,12 @@
-const db = require('../config/db');
+// ============================================================
+// Controller: Subject — handles subject CRUD (Feature 14)
+// ============================================================
+const Subject = require('../models/Subject');
 
 exports.getSubjects = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
-    const [subjects] = await db.query(
-      'SELECT * FROM subjects WHERE user_id = ? ORDER BY name ASC',
-      [req.session.user.id]
-    );
+    const subjects = await Subject.findAllByUser(req.session.user.id);
     res.render('subjects-list', { user: req.session.user, subjects });
   } catch (err) {
     console.error('Subject list error:', err);
@@ -31,10 +31,7 @@ exports.postCreateSubject = async (req, res) => {
   }
 
   try {
-    await db.query(
-      'INSERT INTO subjects (user_id, name, code, instructor) VALUES (?, ?, ?, ?)',
-      [req.session.user.id, name, code || null, instructor || null]
-    );
+    await Subject.create(req.session.user.id, { name, code, instructor });
     req.session.success = 'Subject created successfully!';
     res.redirect('/subjects');
   } catch (err) {
@@ -47,14 +44,14 @@ exports.postCreateSubject = async (req, res) => {
 exports.getEditSubject = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
-    const [rows] = await db.query('SELECT * FROM subjects WHERE id = ? AND user_id = ?', [req.params.id, req.session.user.id]);
-    if (!rows.length) {
+    const subject = await Subject.findById(req.params.id, req.session.user.id);
+    if (!subject) {
       req.session.error = 'Subject not found.';
       return res.redirect('/subjects');
     }
     res.render('subjects-form', {
       user: req.session.user,
-      subject: rows[0],
+      subject,
       formAction: `/subjects/edit/${req.params.id}`,
       pageTitle: 'Edit Subject'
     });
@@ -76,10 +73,7 @@ exports.postEditSubject = async (req, res) => {
   }
 
   try {
-    await db.query(
-      'UPDATE subjects SET name = ?, code = ?, instructor = ? WHERE id = ? AND user_id = ?',
-      [name, code || null, instructor || null, req.params.id, req.session.user.id]
-    );
+    await Subject.update(req.params.id, req.session.user.id, { name, code, instructor });
     req.session.success = 'Subject updated successfully!';
     res.redirect('/subjects');
   } catch (err) {
@@ -92,7 +86,7 @@ exports.postEditSubject = async (req, res) => {
 exports.deleteSubject = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
-    await db.query('DELETE FROM subjects WHERE id = ? AND user_id = ?', [req.params.id, req.session.user.id]);
+    await Subject.delete(req.params.id, req.session.user.id);
     req.session.success = 'Subject deleted.';
   } catch (err) {
     console.error('Delete subject error:', err);

@@ -1,4 +1,7 @@
-const db = require('../config/db');
+// ============================================================
+// Controller: Reminder — handles reminder CRUD (Feature 11)
+// ============================================================
+const Reminder = require('../models/Reminder');
 
 function normalizeReminder(body) {
   return {
@@ -11,10 +14,7 @@ function normalizeReminder(body) {
 exports.getReminders = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
-    const [reminders] = await db.query(
-      'SELECT * FROM reminders WHERE user_id = ? ORDER BY due_at ASC',
-      [req.session.user.id]
-    );
+    const reminders = await Reminder.findAllByUser(req.session.user.id);
     res.render('reminders-list', { user: req.session.user, reminders });
   } catch (err) {
     console.error('Reminder list error:', err);
@@ -36,10 +36,7 @@ exports.postCreateReminder = async (req, res) => {
     return res.redirect('/reminders/new');
   }
   try {
-    await db.query(
-      'INSERT INTO reminders (user_id, title, message, due_at) VALUES (?, ?, ?, ?)',
-      [req.session.user.id, reminder.title, reminder.message, reminder.due_at]
-    );
+    await Reminder.create(req.session.user.id, reminder);
     req.session.success = 'Reminder created successfully!';
     res.redirect('/reminders');
   } catch (err) {
@@ -52,14 +49,14 @@ exports.postCreateReminder = async (req, res) => {
 exports.getEditReminder = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
-    const [rows] = await db.query('SELECT * FROM reminders WHERE id = ? AND user_id = ?', [req.params.id, req.session.user.id]);
-    if (!rows.length) {
+    const reminder = await Reminder.findById(req.params.id, req.session.user.id);
+    if (!reminder) {
       req.session.error = 'Reminder not found.';
       return res.redirect('/reminders');
     }
     res.render('reminders-form', {
       user: req.session.user,
-      reminder: rows[0],
+      reminder,
       formAction: `/reminders/edit/${req.params.id}`,
       pageTitle: 'Edit Reminder'
     });
@@ -78,10 +75,7 @@ exports.postEditReminder = async (req, res) => {
     return res.redirect(`/reminders/edit/${req.params.id}`);
   }
   try {
-    await db.query(
-      'UPDATE reminders SET title = ?, message = ?, due_at = ? WHERE id = ? AND user_id = ?',
-      [reminder.title, reminder.message, reminder.due_at, req.params.id, req.session.user.id]
-    );
+    await Reminder.update(req.params.id, req.session.user.id, reminder);
     req.session.success = 'Reminder updated successfully!';
     res.redirect('/reminders');
   } catch (err) {
@@ -94,7 +88,7 @@ exports.postEditReminder = async (req, res) => {
 exports.deleteReminder = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
-    await db.query('DELETE FROM reminders WHERE id = ? AND user_id = ?', [req.params.id, req.session.user.id]);
+    await Reminder.delete(req.params.id, req.session.user.id);
     req.session.success = 'Reminder deleted.';
   } catch (err) {
     console.error('Delete reminder error:', err);

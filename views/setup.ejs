@@ -1,73 +1,10 @@
 <%- include('header') %>
-<style>
-.setup-page{max-width:780px;margin:0 auto;padding:36px 20px}
-/* Stepper */
-.stepper{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:40px}
-.step-item{display:flex;align-items:center;gap:0}
-.step-circle{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;transition:all .3s}
-.step-circle.active{background:#4f46e5;color:#fff}
-.step-circle.done{background:#10b981;color:#fff}
-.step-circle.inactive{background:#1f2937;color:#6b7280;border:2px solid #374151}
-.step-label{font-size:13px;font-weight:600;margin-left:8px;color:#9ca3af}
-.step-label.active{color:#f9fafb}
-.step-label.done{color:#10b981}
-.step-connector{width:80px;height:2px;background:#374151;margin:0 8px;flex-shrink:0}
-.step-connector.done{background:#10b981}
-
-/* Role step */
-.setup-title{text-align:center;font-size:30px;font-weight:800;color:#f9fafb;margin-bottom:10px}
-.setup-sub{text-align:center;color:#9ca3af;font-size:14px;margin-bottom:36px}
-.role-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
-.role-card{background:#111827;border:2px solid #1e293b;border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative}
-.role-card:hover{border-color:#374151}
-.role-card.selected{border-color:#4f46e5;background:rgba(79,70,229,.08)}
-.role-card .check{position:absolute;top:14px;right:14px;width:22px;height:22px;border-radius:50%;background:#4f46e5;display:none;align-items:center;justify-content:center;font-size:12px;color:#fff}
-.role-card.selected .check{display:flex}
-.role-icon{width:52px;height:52px;border-radius:14px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:22px}
-.role-icon.student{background:linear-gradient(135deg,#6366f1,#8b5cf6)}
-.role-icon.professional{background:linear-gradient(135deg,#0ea5e9,#3b82f6)}
-.role-icon.freelancer{background:linear-gradient(135deg,#10b981,#059669)}
-.role-name{font-size:16px;font-weight:700;color:#f9fafb;margin-bottom:8px}
-.role-desc{font-size:12px;color:#6b7280;line-height:1.6}
-.btn-continue{display:block;margin:0 auto;padding:13px 40px;background:#4f46e5;color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:background .2s}
-.btn-continue:hover{background:#4338ca}
-.btn-continue:disabled{background:#1f2937;color:#4b5563;cursor:not-allowed}
-
-/* Module step */
-.role-badge-top{text-align:center;margin-bottom:12px}
-.role-badge{display:inline-flex;align-items:center;gap:6px;background:#1a2232;border:1px solid #2d3f5a;color:#60a5fa;padding:5px 14px;border-radius:20px;font-size:13px;font-weight:600}
-.selected-count{text-align:center;color:#6b7280;font-size:13px;margin-bottom:24px}
-.selected-count span{color:#4f46e5;font-weight:700}
-.mod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
-.mod-toggle-card{background:#111827;border:2px solid #1e293b;border-radius:12px;padding:16px;position:relative;transition:border-color .2s}
-.mod-toggle-card.on{border-color:#10b981}
-.rec-badge{font-size:9px;font-weight:800;color:#10b981;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
-.mod-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
-.mod-icon-sm{width:34px;height:34px;border-radius:8px;background:rgba(79,70,229,.15);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.mod-toggle-card.on .mod-icon-sm{background:rgba(16,185,129,.12)}
-.mod-info-sm h4{font-size:13px;font-weight:700;color:#f9fafb;margin-bottom:3px}
-.mod-info-sm p{font-size:11px;color:#6b7280;line-height:1.5}
-.toggle-row{display:flex;justify-content:flex-end;margin-top:4px}
-/* iOS toggle */
-.toggle-switch{position:relative;display:inline-block;width:42px;height:24px;cursor:pointer}
-.toggle-switch input{opacity:0;width:0;height:0}
-.toggle-slider{position:absolute;top:0;left:0;right:0;bottom:0;background:#374151;border-radius:24px;transition:.3s}
-.toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s}
-.toggle-switch input:checked+.toggle-slider{background:#10b981}
-.toggle-switch input:checked+.toggle-slider::before{transform:translateX(18px)}
-.setup-actions{display:flex;align-items:center;justify-content:center;gap:14px}
-.btn-back-setup{background:#1f2937;color:#9ca3af;border:1px solid #374151;padding:12px 24px;border-radius:9px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-.btn-back-setup:hover{background:#374151;color:#f9fafb}
-.btn-launch{background:#10b981;color:#fff;border:none;padding:13px 32px;border-radius:9px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;display:flex;align-items:center;gap:8px}
-.btn-launch:hover{background:#059669}
-</style>
-
 <div class="setup-page">
   <!-- Stepper -->
   <div class="stepper">
     <div class="step-item">
       <div class="step-circle <%= step==='role' ? 'active' : 'done' %>">
-        <%= step==='role' ? '1' : '✓' %>
+        <%= step==='role' ? '1' : '<i class="fas fa-check"></i>' %>
       </div>
       <span class="step-label <%= step==='role' ? 'active' : 'done' %>">Role</span>
     </div>
@@ -84,7 +21,7 @@
   </div>
 
   <% if(step === 'role') { %>
-  <h1 class="setup-title">👤 Who Are You?</h1>
+  <h1 class="setup-title"><i class="fas fa-user"></i> Who Are You?</h1>
   <p class="setup-sub">Select your primary role so we can recommend the best modules for you</p>
 
   <form method="POST" action="/setup/role" id="roleForm">
@@ -92,9 +29,9 @@
     <div class="role-grid">
       <% roles.forEach(function(r){ %>
       <div class="role-card" onclick="pickRole(<%= r.id %>,this)" id="rc_<%= r.id %>">
-        <div class="check">✓</div>
+        <div class="check"><i class="fas fa-check"></i></div>
         <div class="role-icon <%= r.name.toLowerCase() %>">
-          <%= r.name==='Student' ? '🎓' : r.name==='Professional' ? '💼' : '🚀' %>
+          <%= r.name==='Student' ? '<i class="fas fa-graduation-cap"></i>' : r.name==='Professional' ? '<i class="fas fa-briefcase"></i>' : '<i class="fas fa-rocket"></i>' %>
         </div>
         <div class="role-name"><%= r.name %></div>
         <div class="role-desc"><%= r.description %></div>
@@ -114,9 +51,9 @@
 
   <% } else if(step === 'modules') { %>
   <div class="role-badge-top">
-    <span class="role-badge">👤 <%= user.role %></span>
+    <span class="role-badge"><i class="fas fa-user"></i> <%= user.role %></span>
   </div>
-  <h1 class="setup-title">🧩 Customize Your Workspace</h1>
+  <h1 class="setup-title"><i class="fas fa-puzzle-piece"></i> Customize Your Workspace</h1>
   <p class="setup-sub">We've recommended modules based on your role. Toggle them to fit your needs.</p>
   <p class="selected-count">Selected: <span id="selCount"><%= recommended.length %></span> modules</p>
 
@@ -128,7 +65,7 @@
         <% if(isRec){ %><div class="rec-badge">Recommended</div><% } %>
         <div class="mod-top">
           <div class="mod-icon-sm">
-            <%= mod.slug==='tasks'?'≡':mod.slug==='study'?'📖':mod.slug==='finance'?'💰':mod.slug==='health'?'❤':mod.slug==='projects'?'📊':mod.slug==='notes'?'📝':mod.slug==='calendar'?'📅':mod.slug==='reminders'?'⏰':mod.slug==='alarms'?'🔔':mod.slug==='subjects'?'📘':'✏' %>
+            <%= mod.slug==='tasks'?'<i class="fas fa-tasks"></i>':mod.slug==='study'?'<i class="fas fa-book-open"></i>':mod.slug==='finance'?'<i class="fas fa-money-bill-wave"></i>':mod.slug==='health'?'<i class="fas fa-heart"></i>':mod.slug==='projects'?'<i class="fas fa-chart-bar"></i>':mod.slug==='notes'?'<i class="fas fa-sticky-note"></i>':mod.slug==='calendar'?'<i class="fas fa-calendar-alt"></i>':mod.slug==='reminders'?'<i class="fas fa-clock"></i>':mod.slug==='alarms'?'<i class="fas fa-bell"></i>':mod.slug==='subjects'?'<i class="fas fa-book"></i>':'<i class="fas fa-pencil-alt"></i>' %>
           </div>
           <div class="mod-info-sm">
             <h4><%= mod.name %></h4>
@@ -146,7 +83,7 @@
     </div>
     <div class="setup-actions">
       <a href="/setup" class="btn-back-setup">← Back</a>
-      <button type="submit" class="btn-launch">🚀 Launch Workspace</button>
+      <button type="submit" class="btn-launch"><i class="fas fa-rocket"></i> Launch Workspace</button>
     </div>
   </form>
   <script>
