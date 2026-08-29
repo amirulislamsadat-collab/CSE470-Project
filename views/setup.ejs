@@ -31,7 +31,7 @@
       <div class="role-card" onclick="pickRole(<%= r.id %>,this)" id="rc_<%= r.id %>">
         <div class="check"><i class="fas fa-check"></i></div>
         <div class="role-icon <%= r.name.toLowerCase() %>">
-          <%= r.name==='Student' ? '<i class="fas fa-graduation-cap"></i>' : r.name==='Professional' ? '<i class="fas fa-briefcase"></i>' : '<i class="fas fa-rocket"></i>' %>
+          <%- r.name==='Student' ? '<i class="fas fa-graduation-cap"></i>' : r.name==='Professional' ? '<i class="fas fa-briefcase"></i>' : '<i class="fas fa-rocket"></i>' %>
         </div>
         <div class="role-name"><%= r.name %></div>
         <div class="role-desc"><%= r.description %></div>
@@ -65,7 +65,7 @@
         <% if(isRec){ %><div class="rec-badge">Recommended</div><% } %>
         <div class="mod-top">
           <div class="mod-icon-sm">
-            <%= mod.slug==='tasks'?'<i class="fas fa-tasks"></i>':mod.slug==='study'?'<i class="fas fa-book-open"></i>':mod.slug==='finance'?'<i class="fas fa-money-bill-wave"></i>':mod.slug==='health'?'<i class="fas fa-heart"></i>':mod.slug==='projects'?'<i class="fas fa-chart-bar"></i>':mod.slug==='notes'?'<i class="fas fa-sticky-note"></i>':mod.slug==='calendar'?'<i class="fas fa-calendar-alt"></i>':mod.slug==='reminders'?'<i class="fas fa-clock"></i>':mod.slug==='alarms'?'<i class="fas fa-bell"></i>':mod.slug==='subjects'?'<i class="fas fa-book"></i>':'<i class="fas fa-pencil-alt"></i>' %>
+            <%- mod.slug==='tasks'?'<i class="fas fa-tasks"></i>':mod.slug==='study'?'<i class="fas fa-book-open"></i>':mod.slug==='finance'?'<i class="fas fa-money-bill-wave"></i>':mod.slug==='health'?'<i class="fas fa-heart"></i>':mod.slug==='projects'?'<i class="fas fa-chart-bar"></i>':mod.slug==='notes'?'<i class="fas fa-sticky-note"></i>':mod.slug==='calendar'?'<i class="fas fa-calendar-alt"></i>':mod.slug==='reminders'?'<i class="fas fa-clock"></i>':mod.slug==='alarms'?'<i class="fas fa-bell"></i>':mod.slug==='subjects'?'<i class="fas fa-book"></i>':'<i class="fas fa-pencil-alt"></i>' %>
           </div>
           <div class="mod-info-sm">
             <h4><%= mod.name %></h4>
