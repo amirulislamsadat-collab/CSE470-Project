@@ -1,215 +1,49 @@
 <%- include('header', { currentPath: '/tasks' }) %>
-<style>
-.page { padding: 40px 32px; max-width: 1100px; margin: 0 auto; }
-.top-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-}
-.page-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 28px;
-  font-weight: 700;
-  color: #f9fafb;
-}
-.page-title svg { stroke: #818cf8; }
-.page-desc {
-  color: #9ca3af;
-  font-size: 14px;
-  margin-top: 8px;
-}
-.btn-primary {
-  background: #4f46e5;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.filter-bar {
-  background: #111827;
-  border: 1px solid #1e293b;
-  border-radius: 12px;
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 32px;
-}
-.filter-icon { color: #9ca3af; display: flex; align-items: center; }
-.filter-select {
-  background: transparent;
-  border: none;
-  color: #9ca3af;
-  font-size: 13px;
-  font-weight: 600;
-  outline: none;
-  cursor: pointer;
-}
-
-.task-list { display: flex; flex-direction: column; gap: 16px; }
-.task-item {
-  background: #111827;
-  border: 1px solid #1e293b;
-  border-radius: 14px;
-  padding: 20px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: border-color 0s;
-}
-.task-item:hover {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 1px #3b82f6;
-}
-.task-item.done {
-  opacity: 0.7;
-}
-.t-main {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-}
-.t-checkbox {
-  margin-top: 4px;
-}
-.t-checkbox button {
-  background: transparent;
-  border: 2px solid #374151;
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  color: transparent;
-}
-.t-checkbox button:hover { border-color: #10b981; }
-.task-item.done .t-checkbox button {
-  background: #10b981;
-  border-color: #10b981;
-  color: #fff;
-}
-.t-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #f9fafb;
-  margin-bottom: 6px;
-}
-.task-item.done .t-title { text-decoration: line-through; color: #6b7280; }
-.t-meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #9ca3af;
-}
-.badge-cat {
-  padding: 2px 8px;
-  border-radius: 12px;
-  background: #1f2937;
-  color: #d1d5db;
-}
-.badge-status {
-  padding: 2px 8px;
-  border-radius: 12px;
-}
-.badge-status.pending { background: rgba(245, 158, 11, 0.1); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.2); }
-.badge-status.done { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
-
-.t-actions { display: flex; align-items: center; gap: 12px; }
-.btn-del {
-  background: transparent;
-  border: none;
-  color: #6b7280;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-}
-.btn-del:hover { background: #1f2937; color: #ef4444; }
-
-.empty-state {
-  background: #111827;
-  border: 1px solid #1e293b;
-  border-radius: 16px;
-  padding: 80px 20px;
-  text-align: center;
-}
-.empty-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  background: #1f2937;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 24px;
-  color: #9ca3af;
-}
-.empty-icon svg { width: 32px; height: 32px; }
-.empty-state h3 { font-size: 20px; font-weight: 700; color: #f9fafb; margin-bottom: 12px; }
-.empty-state p { color: #9ca3af; font-size: 15px; margin-bottom: 32px; }
-</style>
-
 <div class="page">
-  <div class="top-header">
+  <div class="top">
     <div>
-      <h1 class="page-title">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-        Task Manager
-      </h1>
-      <p class="page-desc">Organize your work and track your progress.</p>
+      <h1><i class="fas fa-tasks" aria-hidden="true"></i> Task Manager</h1>
+      <div class="page-desc">Organize your work and track your progress.</div>
     </div>
-    <a href="/tasks/new" class="btn-primary">+ New Task</a>
+    <a href="/tasks/new" class="btn primary" id="newTaskBtn"><i class="fas fa-plus" aria-hidden="true"></i> New Task</a>
   </div>
 
   <div class="filter-bar">
-    <div class="filter-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg></div>
+    <div class="filter-icon"><i class="fas fa-filter" aria-hidden="true"></i></div>
     <select class="filter-select"><option>All Status ↕</option></select>
     <select class="filter-select"><option>All Priorities ↕</option></select>
     <select class="filter-select"><option>All Categories ↕</option></select>
   </div>
 
   <% if(tasks && tasks.length > 0) { %>
-    <div class="task-list">
+    <div class="list">
       <% tasks.forEach(task => { %>
-        <div class="task-item <%= task.status === 'done' ? 'done' : '' %>">
-          <div class="t-main">
-            <div class="t-checkbox">
+        <div class="item <%= task.status === 'done' ? 'item-done' : '' %>">
+          <div class="item-body" style="display:flex;align-items:flex-start;gap:15px;">
+            <div class="t-checkbox" style="margin-top:2px;">
               <% if(task.status !== 'done') { %>
                 <form action="/tasks/done/<%= task.id %>" method="POST">
-                  <button type="submit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
+                  <button type="submit" class="btn secondary btn-sm" style="border-radius:50%;width:30px;height:30px;padding:0;display:flex;align-items:center;justify-content:center;"><i class="fas fa-check" aria-hidden="true"></i></button>
                 </form>
               <% } else { %>
-                <button type="button" disabled><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
+                <button type="button" class="btn primary btn-sm" disabled style="border-radius:50%;width:30px;height:30px;padding:0;display:flex;align-items:center;justify-content:center;opacity:1;"><i class="fas fa-check" aria-hidden="true"></i></button>
               <% } %>
             </div>
             <div>
-              <div class="t-title"><%= task.title %></div>
-              <div class="t-meta">
+              <div class="item-title" style="<%= task.status === 'done' ? 'text-decoration:line-through;color:#adb5bd;' : '' %>"><%= task.title %></div>
+              <div class="meta">
                 <span class="badge-status <%= task.status %>"><%= task.status === 'done' ? 'Completed' : 'Pending' %></span>
                 <% if(task.category_name) { %>
-                  <span class="badge-cat"><%= task.category_name %></span>
+                  <span class="badge-cat"><i class="fas fa-tag" aria-hidden="true"></i> <%= task.category_name %></span>
                 <% } %>
-                <span>Priority: <%= task.priority %></span>
+                <span><i class="fas fa-flag" aria-hidden="true"></i> Priority: <%= task.priority %></span>
               </div>
             </div>
           </div>
-          <div class="t-actions">
-            <form action="/tasks/delete/<%= task.id %>" method="POST" onsubmit="return confirm('Delete this task?');">
-              <button type="submit" class="btn-del">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-              </button>
+          <div class="actions">
+            <a href="/tasks/edit/<%= task.id %>" class="btn secondary btn-sm"><i class="fas fa-edit" aria-hidden="true"></i> Edit</a>
+            <form action="/tasks/delete/<%= task.id %>" method="POST" onsubmit="return confirm('Delete this task?');" style="display:inline">
+              <button type="submit" class="btn danger btn-sm"><i class="fas fa-trash-alt" aria-hidden="true"></i> Delete</button>
             </form>
           </div>
         </div>
@@ -218,11 +52,11 @@
   <% } else { %>
     <div class="empty-state">
       <div class="empty-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+        <i class="fas fa-tasks" aria-hidden="true"></i>
       </div>
       <h3>No tasks found</h3>
       <p>You're all caught up! Enjoy your free time or create a new task.</p>
-      <a href="/tasks/new" class="btn-primary">Create First Task</a>
+      <a href="/tasks/new" class="btn primary"><i class="fas fa-plus" aria-hidden="true"></i> Create First Task</a>
     </div>
   <% } %>
 </div>
