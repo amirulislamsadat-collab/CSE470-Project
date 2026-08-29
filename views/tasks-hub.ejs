@@ -1,114 +1,24 @@
 <%- include('header', { currentPath: '/tasks' }) %>
-<style>
-.page { padding: 40px 32px; max-width: 1100px; margin: 0 auto; }
-.hub-header {
-  text-align: center;
-  margin-bottom: 48px;
-  padding-top: 40px;
-}
-.hub-header h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: #f9fafb;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-.hub-header p {
-  color: #9ca3af;
-  font-size: 16px;
-}
-.gateway-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  max-width: 800px;
-  margin: 0 auto;
-}
-.gateway-card {
-  background: #111827;
-  border: 1px solid #1e293b;
-  border-radius: 16px;
-  padding: 40px;
-  text-align: center;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: border-color 0s;
-}
-.gateway-card:hover {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 1px #3b82f6;
-}
-.gw-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  background: rgba(79, 70, 229, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 24px;
-}
-.gw-icon svg { fill: #818cf8; width: 32px; height: 32px; }
-.gateway-card.alt .gw-icon {
-  background: rgba(16, 185, 129, 0.1);
-}
-.gateway-card.alt .gw-icon svg { fill: #34d399; }
-.gw-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #f9fafb;
-  margin-bottom: 12px;
-}
-.gw-desc {
-  color: #9ca3af;
-  font-size: 14px;
-  line-height: 1.5;
-}
-.top-nav { margin-bottom: 24px; }
-.back-link {
-  color: #9ca3af;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  background: #111827;
-  border: 1px solid #1e293b;
-  border-radius: 8px;
-}
-</style>
-
 <div class="page">
-  <div class="top-nav">
-    <a href="/dashboard" class="back-link">← Back to Dashboard</a>
-  </div>
-
-  <div class="hub-header">
-    <h1>
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="stroke:#818cf8"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-      Task Manager Gateway
-    </h1>
-    <p>Organize your work, track your progress, and stay productive.</p>
+  <div class="top">
+    <div>
+      <a href="/dashboard" class="back-link" style="margin-bottom:10px;display:inline-block;"><i class="fas fa-arrow-left" aria-hidden="true"></i> Back to Dashboard</a>
+      <h1><i class="fas fa-tasks" aria-hidden="true"></i> Task Manager Gateway</h1>
+      <div class="page-desc">Organize your work, track your progress, and stay productive.</div>
+    </div>
   </div>
 
   <div class="gateway-grid">
     <a href="/tasks/new" class="gateway-card">
       <div class="gw-icon">
-        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        <i class="fas fa-plus-circle" aria-hidden="true"></i>
       </div>
-      <div class="gw-title">+ New Task</div>
+      <div class="gw-title">New Task</div>
       <div class="gw-desc">Create a new task and add it to your current active workload.</div>
     </a>
     <a href="/tasks/view" class="gateway-card alt">
       <div class="gw-icon">
-        <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+        <i class="fas fa-list-ul" aria-hidden="true"></i>
       </div>
       <div class="gw-title">View All Tasks</div>
       <div class="gw-desc">Browse, filter, and manage all your existing tasks in one place.</div>
