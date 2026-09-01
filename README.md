@@ -1,59 +1,92 @@
-![Async Logo](https://raw.githubusercontent.com/caolan/async/master/logo/async-logo_readme.jpg)
+# ALMS — Adaptive Life Management System
 
-![Github Actions CI status](https://github.com/caolan/async/actions/workflows/ci.yml/badge.svg)
-[![NPM version](https://img.shields.io/npm/v/async.svg)](https://www.npmjs.com/package/async)
-[![Coverage Status](https://coveralls.io/repos/caolan/async/badge.svg?branch=master)](https://coveralls.io/r/caolan/async?branch=master)
-[![Join the chat at https://gitter.im/caolan/async](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/caolan/async?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![jsDelivr Hits](https://data.jsdelivr.com/v1/package/npm/async/badge?style=rounded)](https://www.jsdelivr.com/package/npm/async)
+CSE470 (Software Engineering) — Group 09 project. A modular Node.js / Express / MySQL life-management platform: task manager, notes, calendar, reminders/alarms, subjects, study planner, health & wellness tracking, habit tracker, digital wellbeing, and finance tracker, all with per-user module enable/disable.
 
-<!--
-|Linux|Windows|MacOS|
-|-|-|-|
-|[![Linux Build Status](https://dev.azure.com/caolanmcmahon/async/_apis/build/status/caolan.async?branchName=master&jobName=Linux&configuration=Linux%20node_10_x)](https://dev.azure.com/caolanmcmahon/async/_build/latest?definitionId=1&branchName=master) | [![Windows Build Status](https://dev.azure.com/caolanmcmahon/async/_apis/build/status/caolan.async?branchName=master&jobName=Windows&configuration=Windows%20node_10_x)](https://dev.azure.com/caolanmcmahon/async/_build/latest?definitionId=1&branchName=master) | [![MacOS Build Status](https://dev.azure.com/caolanmcmahon/async/_apis/build/status/caolan.async?branchName=master&jobName=OSX&configuration=OSX%20node_10_x)](https://dev.azure.com/caolanmcmahon/async/_build/latest?definitionId=1&branchName=master)| -->
+Built with plain **MVC**: `models/` (MySQL data access), `views/` (EJS templates), `controllers/` (request handling), `routes/` (Express routers), `config/` (DB connection), `middleware/` (notification checks).
 
-Async is a utility module which provides straight-forward, powerful functions for working with [asynchronous JavaScript](http://caolan.github.io/async/v3/global.html). Although originally designed for use with [Node.js](https://nodejs.org/) and installable via `npm i async`, it can also be used directly in the browser.  An ESM/MJS version is included in the main `async` package that should automatically be used with compatible bundlers such as Webpack and Rollup.
+## Features
 
-A pure ESM version of Async is available as [`async-es`](https://www.npmjs.com/package/async-es).
+1–14 (original): User role selection & workspace recommendation, module customization/enable-disable with data preservation, Task Manager, Notes (create/edit/search/pin/delete), Calendar with conflict detection, Reminders, Alarms with recurring schedules, due notifications, Subject Management.
 
-For Documentation, visit <https://caolan.github.io/async/>
+15–21 (this increment):
 
-*For Async v1.5.x documentation, go [HERE](https://github.com/caolan/async/blob/v1.5.2/README.md)*
+| # | Feature | Where |
+|---|---|---|
+| 15 | Assignment Management | `/assignments` (Study Planner) |
+| 16 | Examination Management with countdown | `/exams` (Study Planner) |
+| 17 | Study Session Management | `/study-sessions` (Study Planner) |
+| 18 | Sleep Tracking | `/sleep` (Health & Wellness) |
+| 19 | Water Intake Tracking | `/water` (Health & Wellness) |
+| 20 | Exercise Tracking | `/exercise` (Health & Wellness) |
+| 21 | Mood Tracking | `/mood` (Health & Wellness) |
 
+22–28 (this increment):
 
-```javascript
-// for use with Node-style callbacks...
-var async = require("async");
+| # | Feature | Where |
+|---|---|---|
+| 22 | Medication Reminder | `/medications` (Health & Wellness) |
+| 23 | Habit Management | `/habits` (Habit Tracker) |
+| 24 | Habit Streak Calculation | `/habits` (Habit Tracker — current & longest streak per habit) |
+| 25 | Screen Time Recording | `/screen-time` (Digital Wellbeing) |
+| 26 | Social Media Usage Tracking | `/social-media` (Digital Wellbeing) |
+| 27 | Productive Time Analysis | `/modules/screentime` (Digital Wellbeing hub — productive vs. non-productive breakdown) |
+| 28 | Expense Tracking | `/expenses` (Finance Tracker) |
 
-var obj = {dev: "/dev.json", test: "/test.json", prod: "/prod.json"};
-var configs = {};
+## Local development (XAMPP)
 
-async.forEachOf(obj, (value, key, callback) => {
-    fs.readFile(__dirname + value, "utf8", (err, data) => {
-        if (err) return callback(err);
-        try {
-            configs[key] = JSON.parse(data);
-        } catch (e) {
-            return callback(e);
-        }
-        callback();
-    });
-}, err => {
-    if (err) console.error(err.message);
-    // configs is now a map of JSON data
-    doSomethingWith(configs);
-});
+1. Install [XAMPP](https://www.apachefriends.org/) and start **MySQL** from the XAMPP Control Panel (Apache is not required — this app runs its own Node server).
+2. Create the database once, e.g. via phpMyAdmin or:
+   ```
+   C:\xampp\mysql\bin\mysql.exe -u root -e "CREATE DATABASE IF NOT EXISTS alms_db;"
+   ```
+3. Install dependencies:
+   ```
+   npm install
+   ```
+4. (Optional) Copy `.env.example` to `.env` if your MySQL isn't the XAMPP default (root / no password / port 3306) — the app already falls back to those defaults, so a fresh XAMPP install needs no `.env` at all.
+5. Start the server:
+   ```
+   node server.js
+   ```
+   or
+   ```
+   npm start
+   ```
+6. Open **http://localhost:3000** — all tables are created automatically (and are safe to re-run; existing data is preserved).
+
+## Deploying (Vercel + a cloud MySQL database)
+
+Vercel runs this app as a serverless function (`server.js` exports the Express `app`; `vercel.json` routes all requests to it and serves `/public` as static files). Two things to set up:
+
+1. **A cloud MySQL database.** XAMPP only runs on your machine, so Vercel's servers can't reach it — you need a publicly reachable MySQL instance (free tiers work fine): [Aiven](https://aiven.io/mysql), [Railway](https://railway.app/), [Clever Cloud](https://www.clever-cloud.com/), or similar.
+2. **Push this repo to GitHub, then import it in Vercel** (New Project → Import Git Repository) and set these Environment Variables in the Vercel project settings, using your cloud database's credentials:
+   - `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_PORT`
+   - `SESSION_SECRET` — any long random string
+
+Deploy. The first request initializes the schema automatically (idempotent, same as local).
+
+> **Session storage note:** this app uses `express-session`'s default in-memory store, which is fine for local development and light single-instance use. Serverless platforms can spin up multiple instances, so under real traffic a persistent session store (e.g. a MySQL- or Redis-backed store) would make logins more reliable in production. Swapping the store in `server.js` is a drop-in change if you need that later.
+
+## Pushing to a Git repository
+
+This project is already a local git repository with an initial commit. To publish it:
+
+```
+git remote add origin <your-empty-github-repo-url>
+git push -u origin main
 ```
 
-```javascript
-var async = require("async");
+Then follow the Vercel steps above to deploy.
 
-// ...or ES2017 async functions
-async.mapLimit(urls, 5, async function(url) {
-    const response = await fetch(url)
-    return response.body
-}, (err, results) => {
-    if (err) throw err
-    // results is now an array of the response bodies
-    console.log(results)
-})
+## Project structure
+
+```
+config/       MySQL connection pool
+controllers/  Request handlers (one per feature area)
+middleware/   Due-notification check, runs on every request
+models/       Parameterized MySQL queries, one per entity
+public/css/   Stylesheet
+routes/       Express routers, mounted in server.js
+views/        EJS templates (header/footer shared shell + one list/form pair per feature)
+server.js     App entry point — view engine, sessions, routes, table creation, server start
 ```

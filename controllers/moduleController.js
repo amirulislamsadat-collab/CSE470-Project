@@ -1,7 +1,18 @@
 // ============================================================
 // Controller: Module — handles module settings & toggle
 // ============================================================
-const Module = require('../models/Module');
+const Module        = require('../models/Module');
+const Assignment     = require('../models/Assignment');
+const Examination    = require('../models/Examination');
+const StudySession   = require('../models/StudySession');
+const WaterLog       = require('../models/WaterLog');
+const MoodLog        = require('../models/MoodLog');
+const SleepLog       = require('../models/SleepLog');
+const ExerciseLog    = require('../models/ExerciseLog');
+const Medication     = require('../models/Medication');
+const ScreenTimeLog  = require('../models/ScreenTimeLog');
+const SocialMediaLog = require('../models/SocialMediaLog');
+const Expense        = require('../models/Expense');
 
 exports.getSettings = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
@@ -35,12 +46,47 @@ exports.toggleModule = async (req, res) => {
 
 exports.getModulePage = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
+  const userId = req.session.user.id;
   try {
     const mod = await Module.findBySlug(req.params.slug);
     if (!mod) {
       req.session.error = 'Module not found.';
       return res.redirect('/dashboard');
     }
+
+    if (mod.slug === 'study') {
+      const [assignmentStats, upcomingExams, sessionStats] = await Promise.all([
+        Assignment.getStats(userId),
+        Examination.findUpcomingByUser(userId, 3),
+        StudySession.getStats(userId)
+      ]);
+      return res.render('study-hub', { user: req.session.user, module: mod, assignmentStats, upcomingExams, sessionStats });
+    }
+
+    if (mod.slug === 'health') {
+      const [todayWater, latestMood, avgSleepMinutes, weeklyExerciseMinutes, medications] = await Promise.all([
+        WaterLog.getTodayTotal(userId),
+        MoodLog.findLatest(userId),
+        SleepLog.getAverageMinutes(userId, 7),
+        ExerciseLog.getWeeklyMinutes(userId),
+        Medication.findAllByUser(userId)
+      ]);
+      return res.render('health-hub', { user: req.session.user, module: mod, todayWater, latestMood, avgSleepMinutes, weeklyExerciseMinutes, medicationCount: medications.length });
+    }
+
+    if (mod.slug === 'finance') {
+      const summary = await Expense.getSummary(userId);
+      return res.render('finance-hub', { user: req.session.user, module: mod, summary });
+    }
+
+    if (mod.slug === 'screentime') {
+      const [summary, weeklyByPlatform] = await Promise.all([
+        ScreenTimeLog.getSummary(userId, 7),
+        SocialMediaLog.getWeeklyByPlatform(userId)
+      ]);
+      return res.render('digital-hub', { user: req.session.user, module: mod, summary, weeklyByPlatform });
+    }
+
     res.render('module-page', { user: req.session.user, module: mod });
   } catch (err) {
     console.error('Module page error:', err);
