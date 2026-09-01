@@ -11,7 +11,7 @@
     <div class="mc <%= mod.is_enabled ? 'on' : '' %>">
       <div class="mc-top">
         <div class="mc-icon">
-          <%- mod.slug==='tasks'?'<i class="fas fa-tasks"></i>':mod.slug==='study'?'<i class="fas fa-book-open"></i>':mod.slug==='finance'?'<i class="fas fa-money-bill-wave"></i>':mod.slug==='health'?'<i class="fas fa-heart"></i>':mod.slug==='projects'?'<i class="fas fa-chart-bar"></i>':'<i class="fas fa-pencil-alt"></i>' %>
+          <%= mod.slug==='tasks'?'<i class="fas fa-tasks"></i>':mod.slug==='study'?'<i class="fas fa-book-open"></i>':mod.slug==='finance'?'<i class="fas fa-money-bill-wave"></i>':mod.slug==='health'?'<i class="fas fa-heart"></i>':mod.slug==='projects'?'<i class="fas fa-chart-bar"></i>':'<i class="fas fa-pencil-alt"></i>' %>
         </div>
         <div class="mc-info">
           <h4><%= mod.name %></h4>
