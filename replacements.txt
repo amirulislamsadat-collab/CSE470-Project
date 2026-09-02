@@ -1,3 +1,0 @@
-regex:(?m)^.*Generated with \[Claude Code\].*\n?==>
-regex:(?m)^Co-Authored-By: Claude.*\n?==>
-regex:(?m)^Claude-Session:.*\n?==>
