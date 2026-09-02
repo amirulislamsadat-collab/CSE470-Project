@@ -1,7 +1,14 @@
 // ============================================================
 // Controller: Module — handles module settings & toggle
 // ============================================================
-const Module = require('../models/Module');
+const Module        = require('../models/Module');
+const Assignment     = require('../models/Assignment');
+const Examination    = require('../models/Examination');
+const StudySession   = require('../models/StudySession');
+const WaterLog       = require('../models/WaterLog');
+const MoodLog        = require('../models/MoodLog');
+const SleepLog       = require('../models/SleepLog');
+const ExerciseLog    = require('../models/ExerciseLog');
 
 exports.getSettings = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
@@ -35,12 +42,33 @@ exports.toggleModule = async (req, res) => {
 
 exports.getModulePage = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
+  const userId = req.session.user.id;
   try {
     const mod = await Module.findBySlug(req.params.slug);
     if (!mod) {
       req.session.error = 'Module not found.';
       return res.redirect('/dashboard');
     }
+
+    if (mod.slug === 'study') {
+      const [assignmentStats, upcomingExams, sessionStats] = await Promise.all([
+        Assignment.getStats(userId),
+        Examination.findUpcomingByUser(userId, 3),
+        StudySession.getStats(userId)
+      ]);
+      return res.render('study-hub', { user: req.session.user, module: mod, assignmentStats, upcomingExams, sessionStats });
+    }
+
+    if (mod.slug === 'health') {
+      const [todayWater, latestMood, avgSleepMinutes, weeklyExerciseMinutes] = await Promise.all([
+        WaterLog.getTodayTotal(userId),
+        MoodLog.findLatest(userId),
+        SleepLog.getAverageMinutes(userId, 7),
+        ExerciseLog.getWeeklyMinutes(userId)
+      ]);
+      return res.render('health-hub', { user: req.session.user, module: mod, todayWater, latestMood, avgSleepMinutes, weeklyExerciseMinutes });
+    }
+
     res.render('module-page', { user: req.session.user, module: mod });
   } catch (err) {
     console.error('Module page error:', err);
