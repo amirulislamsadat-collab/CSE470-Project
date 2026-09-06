@@ -23,14 +23,10 @@
         </div>
         <div class="fg">
           <label for="aDue">Due Date &amp; Time <span class="required">*</span></label>
-<<<<<<< HEAD
           <div class="date-time-group">
             <input id="aDue" type="date" name="due_date" required value="<%= assignment ? new Date(assignment.due_date).toLocaleDateString('en-CA') : '' %>">
             <input id="aDueTime" type="time" name="due_time" required value="<%= assignment ? new Date(assignment.due_date).toTimeString().slice(0,5) : '' %>">
           </div>
-=======
-          <input id="aDue" type="datetime-local" name="due_date" required value="<%= assignment ? new Date(assignment.due_date).toISOString().slice(0,16) : '' %>">
->>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
         </div>
       </div>
       <div class="form-row">

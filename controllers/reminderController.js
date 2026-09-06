@@ -2,20 +2,13 @@
 // Controller: Reminder — handles reminder CRUD (Feature 11)
 // ============================================================
 const Reminder = require('../models/Reminder');
-<<<<<<< HEAD
 const { combineDateTime } = require('../utils/dateTime');
-=======
->>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
 
 function normalizeReminder(body) {
   return {
     title: (body.title || '').trim(),
     message: (body.message || '').trim(),
-<<<<<<< HEAD
     due_at: combineDateTime(body.due_at, body.due_time)
-=======
-    due_at: body.due_at
->>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
   };
 }
 

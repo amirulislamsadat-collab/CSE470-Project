@@ -13,11 +13,7 @@
       </div>
       <div class="fg">
         <label for="gTarget">Target Date</label>
-<<<<<<< HEAD
         <input id="gTarget" type="date" name="target_date" value="<%= goal && goal.target_date ? new Date(goal.target_date).toLocaleDateString('en-CA') : '' %>">
-=======
-        <input id="gTarget" type="date" name="target_date" value="<%= goal && goal.target_date ? new Date(goal.target_date).toISOString().slice(0,10) : '' %>">
->>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
       </div>
       <% if(goal){ %>
       <div class="fg">

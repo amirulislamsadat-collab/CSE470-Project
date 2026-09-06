@@ -3,10 +3,7 @@
 // ============================================================
 const StudySession = require('../models/StudySession');
 const Subject      = require('../models/Subject');
-<<<<<<< HEAD
 const { combineDateTime } = require('../utils/dateTime');
-=======
->>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
 
 exports.getSessions = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
@@ -39,12 +36,8 @@ exports.getCreateSession = async (req, res) => {
 
 exports.postCreateSession = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
-<<<<<<< HEAD
   const { subject_id, title, duration_minutes, notes } = req.body;
   const session_date = combineDateTime(req.body.session_date, req.body.session_time);
-=======
-  const { subject_id, title, session_date, duration_minutes, notes } = req.body;
->>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
   if (!title || !title.trim()) { req.session.error = 'Study session title is required.'; return res.redirect('/study-sessions/new'); }
   if (!session_date) { req.session.error = 'Session date & time is required.'; return res.redirect('/study-sessions/new'); }
   try {
@@ -84,12 +77,8 @@ exports.getEditSession = async (req, res) => {
 
 exports.postEditSession = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
-<<<<<<< HEAD
   const { subject_id, title, duration_minutes, status, notes } = req.body;
   const session_date = combineDateTime(req.body.session_date, req.body.session_time);
-=======
-  const { subject_id, title, session_date, duration_minutes, status, notes } = req.body;
->>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
   if (!title || !title.trim()) {
     req.session.error = 'Study session title is required.';
     return res.redirect(`/study-sessions/edit/${req.params.id}`);

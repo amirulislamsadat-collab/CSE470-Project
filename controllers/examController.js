@@ -3,10 +3,7 @@
 // ============================================================
 const Examination = require('../models/Examination');
 const Subject     = require('../models/Subject');
-<<<<<<< HEAD
 const { combineDateTime } = require('../utils/dateTime');
-=======
->>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
 
 async function getExams(req, res) {
   if (!req.session.user) {
@@ -50,11 +47,7 @@ async function postCreateExam(req, res) {
   }
   const subjectId = req.body.subject_id;
   const title = req.body.title;
-<<<<<<< HEAD
   const examDate = combineDateTime(req.body.exam_date, req.body.exam_time);
-=======
-  const examDate = req.body.exam_date;
->>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
   const location = req.body.location;
   const notes = req.body.notes;
 
@@ -114,11 +107,7 @@ async function postEditExam(req, res) {
   }
   const subjectId = req.body.subject_id;
   const title = req.body.title;
-<<<<<<< HEAD
   const examDate = combineDateTime(req.body.exam_date, req.body.exam_time);
-=======
-  const examDate = req.body.exam_date;
->>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
   const location = req.body.location;
   const notes = req.body.notes;
 

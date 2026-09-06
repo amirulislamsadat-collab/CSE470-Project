@@ -12,16 +12,11 @@
         <input id="reminderTitle" type="text" name="title" required placeholder="e.g. Submit assignment, Call dentist" value="<%= reminder ? reminder.title : '' %>">
       </div>
       <div class="fg">
-<<<<<<< HEAD
         <label for="reminderDue">Due Date &amp; Time <span class="required">*</span></label>
         <div class="date-time-group">
           <input id="reminderDue" type="date" name="due_at" required value="<%= reminder ? new Date(reminder.due_at).toLocaleDateString('en-CA') : '' %>">
           <input id="reminderDueTime" type="time" name="due_time" required value="<%= reminder ? new Date(reminder.due_at).toTimeString().slice(0,5) : '' %>">
         </div>
-=======
-        <label for="reminderDue">Due Date & Time <span class="required">*</span></label>
-        <input id="reminderDue" type="datetime-local" name="due_at" required value="<%= reminder ? new Date(reminder.due_at).toISOString().slice(0,16) : '' %>">
->>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
       </div>
       <div class="fg">
         <label for="reminderMsg">Message (Optional)</label>

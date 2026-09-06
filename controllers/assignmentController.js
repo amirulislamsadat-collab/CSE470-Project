@@ -3,10 +3,7 @@
 // ============================================================
 const Assignment = require('../models/Assignment');
 const Subject    = require('../models/Subject');
-<<<<<<< HEAD
 const { combineDateTime } = require('../utils/dateTime');
-=======
->>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
 
 exports.getAssignments = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
@@ -36,12 +33,8 @@ exports.getCreateAssignment = async (req, res) => {
 
 exports.postCreateAssignment = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
-<<<<<<< HEAD
   const { subject_id, title, description, priority, status } = req.body;
   const due_date = combineDateTime(req.body.due_date, req.body.due_time);
-=======
-  const { subject_id, title, description, due_date, priority, status } = req.body;
->>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
   if (!title || !title.trim()) { req.session.error = 'Assignment title is required.'; return res.redirect('/assignments/new'); }
   if (!due_date) { req.session.error = 'Due date is required.'; return res.redirect('/assignments/new'); }
   try {
@@ -81,12 +74,8 @@ exports.getEditAssignment = async (req, res) => {
 
 exports.postEditAssignment = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
-<<<<<<< HEAD
   const { subject_id, title, description, priority, status } = req.body;
   const due_date = combineDateTime(req.body.due_date, req.body.due_time);
-=======
-  const { subject_id, title, description, due_date, priority, status } = req.body;
->>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
   if (!title || !title.trim()) {
     req.session.error = 'Assignment title is required.';
     return res.redirect(`/assignments/edit/${req.params.id}`);
