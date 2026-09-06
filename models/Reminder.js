@@ -41,6 +41,15 @@ const Reminder = {
     );
   },
 
+  // Snooze: push the due time forward by `minutes` and clear notified_at,
+  // so it naturally becomes due (and shows up) again once that time arrives.
+  snooze: async (id, userId, minutes) => {
+    await db.query(
+      'UPDATE reminders SET due_at = DATE_ADD(NOW(), INTERVAL ? MINUTE), notified_at = NULL WHERE id = ? AND user_id = ?',
+      [minutes, id, userId]
+    );
+  },
+
   create: async (userId, data) => {
     const [result] = await db.query(
       'INSERT INTO reminders (user_id, title, message, due_at) VALUES (?, ?, ?, ?)',

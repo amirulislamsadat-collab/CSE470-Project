@@ -62,9 +62,10 @@ exports.getEditTask = async (req, res) => {
 
 exports.postCreateTask = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
-  const { title, description, category_id, priority, difficulty, availability } = req.body;
+  const { title, description, category, priority, difficulty, availability } = req.body;
   if (!title || !title.trim()) { req.session.error = 'Task title is required.'; return res.redirect('/tasks/new'); }
   try {
+    const category_id = await Category.findOrCreate(category);
     await Task.create(req.session.user.id, {
       category_id, title: title.trim(), description, priority, difficulty, availability
     });
@@ -80,9 +81,14 @@ exports.postCreateTask = async (req, res) => {
 exports.getTaskList = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
   try {
-    const tasks      = await Task.findAllByUser(req.session.user.id);
+    const filters = {
+      status: ['pending', 'done'].includes(req.query.status) ? req.query.status : '',
+      priority: ['low', 'medium', 'high'].includes(req.query.priority) ? req.query.priority : '',
+      category_id: req.query.category_id || ''
+    };
+    const tasks      = await Task.findAllByUser(req.session.user.id, filters);
     const categories = await Category.findAll();
-    res.render('tasks-list', { user: req.session.user, tasks, categories });
+    res.render('tasks-list', { user: req.session.user, tasks, categories, filters });
   } catch (err) {
     console.error('Task view error:', err);
     res.redirect('/tasks/hub');
@@ -109,13 +115,14 @@ exports.deleteTask = async (req, res) => {
 
 exports.postEditTask = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
-  const { title, description, category_id, priority, difficulty, availability, status } = req.body;
+  const { title, description, category, priority, difficulty, availability, status } = req.body;
   if (!title || !title.trim()) {
     req.session.error = 'Task title is required.';
     return res.redirect(`/tasks/edit/${req.params.id}`);
   }
 
   try {
+    const category_id = await Category.findOrCreate(category);
     const result = await Task.update(req.params.id, req.session.user.id, {
       category_id, title: title.trim(), description, priority, difficulty, availability, status
     });

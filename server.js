@@ -20,9 +20,17 @@ const calendarRoutes  = require('./routes/calendarRoutes');
 const reminderRoutes  = require('./routes/reminderRoutes');
 const alarmRoutes     = require('./routes/alarmRoutes');
 const subjectRoutes   = require('./routes/subjectRoutes');
+const studyRoutes     = require('./routes/studyRoutes');
+const healthRoutes    = require('./routes/healthRoutes');
+const habitRoutes     = require('./routes/habitRoutes');
+const digitalRoutes   = require('./routes/digitalRoutes');
+const financeRoutes   = require('./routes/financeRoutes');
+const goalRoutes      = require('./routes/goalRoutes');
+const journalRoutes   = require('./routes/journalRoutes');
 
 // --- Middleware Imports ---
 const notificationMiddleware = require('./middleware/notificationMiddleware');
+const Module = require('./models/Module');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -54,6 +62,34 @@ app.use((req, res, next) => {
   next();
 });
 
+// --- Setup Gate: block every page until the setup wizard is finished ---
+// (Feature 1) — without this, a brand-new user could type any feature URL
+// directly and skip role/module selection entirely.
+app.use((req, res, next) => {
+  const user = req.session.user;
+  const isSetupRelatedPath = req.path.startsWith('/setup') || req.path.startsWith('/logout') || req.path.startsWith('/api');
+  if (user && user.setup_completed != 1 && !isSetupRelatedPath) {
+    return res.redirect('/setup');
+  }
+  next();
+});
+
+// --- Enabled Modules Lookup (Feature 4) — so the sidebar can hide the nav
+// links for whatever a user has disabled, instead of only the dashboard
+// cards respecting it.
+app.use(async (req, res, next) => {
+  res.locals.enabledSlugs = [];
+  if (req.session.user && req.session.user.setup_completed == 1) {
+    try {
+      const enabled = await Module.findEnabledForUser(req.session.user.id);
+      res.locals.enabledSlugs = enabled.map(m => m.slug);
+    } catch (err) {
+      console.error('Enabled modules lookup error:', err);
+    }
+  }
+  next();
+});
+
 // --- Notification Middleware (Feature 13) ---
 app.use(notificationMiddleware);
 
@@ -66,46 +102,23 @@ app.use('/', calendarRoutes);
 app.use('/', reminderRoutes);
 app.use('/', alarmRoutes);
 app.use('/', subjectRoutes);
+app.use('/', studyRoutes);
+app.use('/', healthRoutes);
+app.use('/', habitRoutes);
+app.use('/', digitalRoutes);
+app.use('/', financeRoutes);
+app.use('/', goalRoutes);
+app.use('/', journalRoutes);
 
 // --- Notifications API (for client-side polling without page refresh) ---
-const Reminder = require('./models/Reminder');
-const Alarm    = require('./models/Alarm');
-const DAY_CODES_API = ['SU','MO','TU','WE','TH','FR','SA'];
-
+// notificationMiddleware (registered above, runs on every request including
+// this one) already computes exactly this — reusing it here instead of a
+// second independent copy of the same due-checking logic avoids the two
+// racing each other and double-consuming the same due reminder/alarm.
 app.get('/api/notifications', async (req, res) => {
   if (!req.session.user) return res.json({ count: 0, items: [] });
-  try {
-    const userId = req.session.user.id;
-    const dueReminders = await Reminder.findDue(userId, 5);
-    const alarms = await Alarm.findEnabledByUser(userId);
-    const now = new Date();
-    const nowHHMM = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-    const dayCode = DAY_CODES_API[now.getDay()];
-    const dueAlarms = [];
-    for (const alarm of alarms) {
-      let matches = false;
-      if (alarm.frequency === 'daily') matches = true;
-      else if (alarm.frequency === 'weekdays') matches = ['MO','TU','WE','TH','FR'].includes(dayCode);
-      else if (alarm.frequency === 'custom') matches = alarm.days_of_week && alarm.days_of_week.split(',').includes(dayCode);
-      if (!matches) continue;
-      const alarmTime = String(alarm.time_of_day || '').slice(0,5);
-      if (!alarmTime || alarmTime > nowHHMM) continue;
-      const last = alarm.last_triggered_at ? new Date(alarm.last_triggered_at) : null;
-      const triggeredToday = last && last.getFullYear()===now.getFullYear() && last.getMonth()===now.getMonth() && last.getDate()===now.getDate();
-      if (!triggeredToday) dueAlarms.push(alarm);
-    }
-    if (dueReminders.length) {
-      await Reminder.markNotified(userId, dueReminders.map(r => r.id));
-    }
-    const items = [
-      ...dueReminders.map(r => ({ type:'reminder', title: r.title, time: r.due_at })),
-      ...dueAlarms.map(a => ({ type:'alarm', title: a.title, time: a.time_of_day }))
-    ];
-    res.json({ count: items.length, items });
-  } catch (err) {
-    console.error('Notifications API error:', err);
-    res.json({ count: 0, items: [] });
-  }
+  const items = res.locals.dueNotifications || [];
+  res.json({ count: items.length, items });
 });
 
 // --- Root Redirect ---
@@ -170,14 +183,23 @@ async function initDB() {
       (2, 'Study Planner',    'study',    'Plan study sessions, track coursework, and manage academic deadlines','book'),
       (3, 'Finance Tracker',  'finance',  'Monitor expenses, income, and maintain a personal budget',            'wallet'),
       (4, 'Health & Wellness','health',   'Track fitness goals, water intake, and wellness habits',              'heart'),
-      (5, 'Project Board',    'projects', 'Manage projects with kanban boards and milestone tracking',           'project'),
       (6, 'Personal Journal', 'journal',  'Write daily reflections, mood tracking, and personal notes',         'pen'),
       (7, 'Notes',            'notes',    'Capture, pin, and search your notes quickly',                         'note'),
       (8, 'Calendar',         'calendar', 'Manage calendar events and detect scheduling conflicts',              'calendar'),
       (9, 'Reminders',        'reminders','Track reminders with due date and time',                              'bell'),
       (10, 'Alarms',          'alarms',   'Set recurring alarms with customizable schedules',                    'alarm'),
-      (11, 'Subjects',        'subjects', 'Manage your academic subjects and instructors',                       'subject')
+      (11, 'Subjects',        'subjects', 'Manage your academic subjects and instructors',                       'subject'),
+      (12, 'Habit Tracker',   'habits',     'Build consistent habits and track your daily completion streaks',            'habit'),
+      (13, 'Digital Wellbeing','screentime','Track screen time and social media usage, and see how productive your time really is', 'mobile'),
+      (14, 'Goals',           'goals',      'Set personal goals, track progress, and celebrate milestones',               'bullseye'),
+      (15, 'Reports & Insights','reports',  'Generate productivity and life balance reports with personalized recommendations', 'chart-line')
     `);
+
+    // "Project Board" was seeded early on but never got a real feature built
+    // behind it. Removing it here (not just from the INSERT list above) so it
+    // also disappears from databases that already seeded it; the FK cascade
+    // on user_modules cleans up any per-user enable/disable rows for it too.
+    await db.query(`DELETE FROM modules WHERE slug = 'projects'`);
 
     // ---------- TABLE 4: user_modules ----------
     await db.query(`
@@ -294,6 +316,12 @@ async function initDB() {
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `);
+    // Older databases created before the alarm snooze feature won't have
+    // this column yet — add it if missing so upgrading in place is safe.
+    const [alarmCols] = await db.query(`SHOW COLUMNS FROM alarms`);
+    if (!alarmCols.some(c => c.Field === 'snooze_until')) {
+      await db.query(`ALTER TABLE alarms ADD COLUMN snooze_until DATETIME DEFAULT NULL`);
+    }
 
     // ---------- TABLE 11: subjects (Feature 14) ----------
     await db.query(`
@@ -309,7 +337,273 @@ async function initDB() {
       )
     `);
 
-    console.log('[DB] All 11 tables created and seeded successfully.');
+    // ---------- TABLE 12: assignments (Feature 15) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS assignments (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        subject_id INT DEFAULT NULL,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        due_date DATETIME NOT NULL,
+        priority VARCHAR(10) DEFAULT 'medium',
+        status VARCHAR(20) DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE SET NULL
+      )
+    `);
+
+    // ---------- TABLE 13: examinations (Feature 16) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS examinations (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        subject_id INT DEFAULT NULL,
+        title VARCHAR(255) NOT NULL,
+        exam_date DATETIME NOT NULL,
+        location VARCHAR(255),
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE SET NULL
+      )
+    `);
+
+    // ---------- TABLE 14: study_sessions (Feature 17) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS study_sessions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        subject_id INT DEFAULT NULL,
+        title VARCHAR(255) NOT NULL,
+        session_date DATETIME NOT NULL,
+        duration_minutes INT DEFAULT 60,
+        status VARCHAR(20) DEFAULT 'planned',
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE SET NULL
+      )
+    `);
+
+    // ---------- TABLE 15: sleep_logs (Feature 18) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS sleep_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        sleep_date DATE NOT NULL,
+        bedtime TIME NOT NULL,
+        wake_time TIME NOT NULL,
+        duration_minutes INT NOT NULL,
+        quality VARCHAR(20) DEFAULT 'okay',
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // ---------- TABLE 16: water_logs (Feature 19) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS water_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        log_date DATE NOT NULL,
+        amount_ml INT NOT NULL,
+        logged_at TIME DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // ---------- TABLE 17: exercise_logs (Feature 20) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS exercise_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        log_date DATE NOT NULL,
+        activity_type VARCHAR(100) NOT NULL,
+        duration_minutes INT NOT NULL,
+        intensity VARCHAR(20) DEFAULT 'moderate',
+        calories_burned INT DEFAULT NULL,
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // ---------- TABLE 18: mood_logs (Feature 21) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS mood_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        log_date DATE NOT NULL,
+        mood VARCHAR(20) NOT NULL,
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // ---------- TABLE 19: medications (Feature 22) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS medications (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        medication_name VARCHAR(255) NOT NULL,
+        dosage VARCHAR(100),
+        frequency VARCHAR(20) NOT NULL DEFAULT 'daily',
+        days_of_week VARCHAR(64),
+        time_of_day TIME NOT NULL,
+        notes TEXT,
+        is_enabled TINYINT(1) DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // ---------- TABLE 20: habits (Feature 23) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS habits (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        description TEXT,
+        frequency VARCHAR(20) NOT NULL DEFAULT 'daily',
+        is_active TINYINT(1) DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // ---------- TABLE 21: habit_logs (Feature 24) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS habit_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        habit_id INT NOT NULL,
+        user_id INT NOT NULL,
+        log_date DATE NOT NULL,
+        completed TINYINT(1) DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY uq_habit_date (habit_id, log_date),
+        FOREIGN KEY (habit_id) REFERENCES habits(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // ---------- TABLE 22: screen_time_logs (Features 25, 27) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS screen_time_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        log_date DATE NOT NULL,
+        activity_name VARCHAR(150) NOT NULL,
+        minutes INT NOT NULL,
+        category VARCHAR(20) NOT NULL DEFAULT 'non_productive',
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // ---------- TABLE 23: social_media_logs (Feature 26) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS social_media_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        log_date DATE NOT NULL,
+        platform VARCHAR(100) NOT NULL,
+        minutes INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // ---------- TABLE 24: expenses (Feature 28) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS expenses (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        type VARCHAR(10) NOT NULL DEFAULT 'expense',
+        category VARCHAR(100) NOT NULL,
+        amount DECIMAL(10,2) NOT NULL,
+        description VARCHAR(255),
+        expense_date DATE NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // ---------- TABLE 25: goals (Feature 30) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS goals (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        target_date DATE,
+        progress_percent INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // ---------- TABLE 26: savings_goals (Feature 29) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS savings_goals (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        target_amount DECIMAL(10,2) NOT NULL,
+        target_date DATE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // ---------- TABLE 27: savings_contributions (Feature 29) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS savings_contributions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        goal_id INT NOT NULL,
+        user_id INT NOT NULL,
+        amount DECIMAL(10,2) NOT NULL,
+        contributed_on DATE NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (goal_id) REFERENCES savings_goals(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    // ---------- TABLE 28: journal_entries (Feature 31) ----------
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS journal_entries (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        entry_date DATE NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        content TEXT,
+        mood_tag VARCHAR(20),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    console.log('[DB] All 28 tables created and seeded successfully.');
   } catch (err) {
     console.error('[DB] Initialization error ->', err.message);
   }
@@ -318,7 +612,18 @@ async function initDB() {
 // ============================================================
 // Start Server
 // ============================================================
-app.listen(PORT, async () => {
-  console.log(`[ALMS] Server running -> http://localhost:${PORT}`);
-  await initDB();
-});
+// initDB() is idempotent (CREATE TABLE IF NOT EXISTS / INSERT IGNORE), so it is
+// safe to run once per process — both for a long-running local/XAMPP server and
+// for a Vercel serverless cold start.
+initDB().catch(err => console.error('[DB] Startup init failed ->', err.message));
+
+// Only bind to a port when run directly (`node server.js` / XAMPP + local dev).
+// On Vercel the exported `app` is wrapped as a serverless function instead —
+// calling app.listen() there would conflict with the platform's own HTTP handling.
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`[ALMS] Server running -> http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

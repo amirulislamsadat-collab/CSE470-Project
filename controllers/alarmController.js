@@ -110,3 +110,29 @@ exports.deleteAlarm = async (req, res) => {
   }
   res.redirect('/alarms');
 };
+
+// The next two are called from the notification panel via fetch(), not a
+// full page navigation, so they respond with JSON instead of a redirect.
+exports.dismissAlarm = async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ error: 'Please log in.' });
+  try {
+    await Alarm.dismiss(req.params.id, req.session.user.id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Dismiss alarm error:', err);
+    res.status(500).json({ error: 'Failed to dismiss alarm.' });
+  }
+};
+
+exports.snoozeAlarm = async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ error: 'Please log in.' });
+  const parsed = parseInt(req.body.minutes, 10);
+  const minutes = Number.isNaN(parsed) ? 10 : parsed;
+  try {
+    await Alarm.snooze(req.params.id, req.session.user.id, minutes);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Snooze alarm error:', err);
+    res.status(500).json({ error: 'Failed to snooze alarm.' });
+  }
+};

@@ -22,7 +22,7 @@ const Alarm = {
 
   findEnabledByUser: async (userId) => {
     const [rows] = await db.query(
-      `SELECT id, title, frequency, days_of_week, time_of_day, last_triggered_at
+      `SELECT id, title, frequency, days_of_week, time_of_day, last_triggered_at, snooze_until
        FROM alarms
        WHERE user_id = ? AND is_enabled = 1`,
       [userId]
@@ -32,6 +32,22 @@ const Alarm = {
 
   markTriggered: async (id, userId) => {
     await db.query('UPDATE alarms SET last_triggered_at = NOW() WHERE id = ? AND user_id = ?', [id, userId]);
+  },
+
+  // Dismiss: acknowledge it for today, same as it clearing itself, but as
+  // an explicit action from the notification panel. Also clears any active
+  // snooze so a dismissed alarm doesn't pop back up a few minutes later.
+  dismiss: async (id, userId) => {
+    await db.query('UPDATE alarms SET last_triggered_at = NOW(), snooze_until = NULL WHERE id = ? AND user_id = ?', [id, userId]);
+  },
+
+  // Snooze: come back and notify again in `minutes`, even though it's
+  // already been triggered once today.
+  snooze: async (id, userId, minutes) => {
+    await db.query(
+      'UPDATE alarms SET snooze_until = DATE_ADD(NOW(), INTERVAL ? MINUTE) WHERE id = ? AND user_id = ?',
+      [minutes, id, userId]
+    );
   },
 
   create: async (userId, data) => {

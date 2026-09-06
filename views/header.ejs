@@ -3,60 +3,180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="ALMS - Adaptive Life Management System. Manage tasks, notes, calendar, reminders, alarms and subjects in one place.">
+<meta name="description" content="ALMS - Adaptive Life Management System. Manage tasks, notes, calendar, reminders, alarms, subjects, study planning and health & wellness in one place.">
 <title>ALMS — Adaptive Life Management System</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<% if(user){ %>
-<nav class="navbar" role="navigation" aria-label="Main navigation">
-  <a href="/dashboard" class="nav-brand" aria-label="ALMS Home">
-    <div class="nav-logo"><i class="fas fa-infinity" aria-hidden="true"></i></div>
-    ALMS
-  </a>
-  <ul class="nav-links">
-    <li><a href="/dashboard" class="<%= (typeof currentPath !== 'undefined' && currentPath === '/dashboard') ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-th-large" aria-hidden="true"></i></span> Dashboard</a></li>
-    <li><a href="/tasks/hub" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/tasks')) ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-tasks" aria-hidden="true"></i></span> Tasks</a></li>
-    <li><a href="/notes" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/notes')) ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-sticky-note" aria-hidden="true"></i></span> Notes</a></li>
-    <li><a href="/calendar" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/calendar')) ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-calendar-alt" aria-hidden="true"></i></span> Calendar</a></li>
-    <li><a href="/reminders" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/reminders')) ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-clock" aria-hidden="true"></i></span> Reminders</a></li>
-    <li><a href="/alarms" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/alarms')) ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-bell" aria-hidden="true"></i></span> Alarms</a></li>
-    <li><a href="/subjects" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/subjects')) ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-book" aria-hidden="true"></i></span> Subjects</a></li>
-    <li><a href="/modules/settings" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/modules')) ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-cog" aria-hidden="true"></i></span> Modules</a></li>
-  </ul>
-  <div class="nav-right">
-    <% if(dueNotifications && dueNotifications.length){ %>
-      <span class="notif-chip" id="notifChip" title="<%= dueNotifications.length %> due notification(s)">
-        <i class="fas fa-bell" aria-hidden="true"></i> <%= dueNotifications.length %> due
-      </span>
-    <% } else { %>
-      <span class="notif-chip notif-chip-hidden" id="notifChip" style="display:none">
-        <i class="fas fa-bell" aria-hidden="true"></i> <span id="notifCount">0</span> due
-      </span>
-    <% } %>
-    <div class="user-chip">
-      <div class="user-avatar" aria-hidden="true"><%= user.name.charAt(0).toUpperCase() %></div>
-      <span class="user-name"><%= user.name %></span>
+<script>
+// Applied immediately (before the rest of the page renders) so neither the
+// sidebar's hidden state nor the dark theme flash visible-then-changed on
+// every page load.
+if (localStorage.getItem('alms_sidebar_hidden') === '1') {
+  document.body.classList.add('sidebar-hidden');
+}
+var savedTheme = localStorage.getItem('alms_theme');
+if (savedTheme === 'dark') {
+  document.documentElement.setAttribute('data-theme', 'dark');
+}
+</script>
+<% var setupDone = user && user.setup_completed == 1; %>
+<% if(setupDone){ %>
+<%
+  var cp = typeof currentPath !== 'undefined' ? currentPath : '';
+  var studyActive   = cp.indexOf('/modules/study') === 0 || cp.indexOf('/assignments') === 0 || cp.indexOf('/exams') === 0 || cp.indexOf('/study-sessions') === 0;
+  var healthActive  = cp.indexOf('/modules/health') === 0 || cp.indexOf('/sleep') === 0 || cp.indexOf('/water') === 0 || cp.indexOf('/exercise') === 0 || cp.indexOf('/mood') === 0 || cp.indexOf('/medications') === 0;
+  var digitalActive = cp.indexOf('/modules/screentime') === 0 || cp.indexOf('/screen-time') === 0 || cp.indexOf('/social-media') === 0;
+  var financeActive = cp.indexOf('/modules/finance') === 0 || cp.indexOf('/expenses') === 0 || cp.indexOf('/savings-goals') === 0;
+%>
+<button type="button" class="sidebar-show-btn" id="sidebarShowBtn" aria-label="Show sidebar" title="Show sidebar">
+  <i class="fas fa-bars" aria-hidden="true"></i>
+</button>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Main navigation">
+    <div class="nav-brand-row">
+      <a href="/dashboard" class="nav-brand" aria-label="ALMS Home">
+        <div class="nav-logo"><i class="fas fa-infinity" aria-hidden="true"></i></div>
+        ALMS
+      </a>
+      <button type="button" class="sidebar-hide-btn" id="sidebarHideBtn" aria-label="Hide sidebar" title="Hide sidebar">
+        <i class="fas fa-angles-left" aria-hidden="true"></i>
+      </button>
     </div>
-    <a href="/logout" style="text-decoration:none">
-      <button class="btn-logout" id="logoutBtn"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</button>
-    </a>
-  </div>
-</nav>
-<% } %>
+    <nav class="nav-links" id="sidebarNav">
+      <li><a href="/dashboard" class="<%= cp === '/dashboard' ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-th-large" aria-hidden="true"></i></span> Dashboard</a></li>
+      <% if(enabledSlugs.indexOf('tasks') !== -1){ %>
+      <li><a href="/tasks/hub" class="<%= cp.indexOf('/tasks') === 0 ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-tasks" aria-hidden="true"></i></span> Tasks</a></li>
+      <% } %>
+      <% if(enabledSlugs.indexOf('notes') !== -1){ %>
+      <li><a href="/notes" class="<%= cp.indexOf('/notes') === 0 ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-sticky-note" aria-hidden="true"></i></span> Notes</a></li>
+      <% } %>
+      <% if(enabledSlugs.indexOf('calendar') !== -1){ %>
+      <li><a href="/calendar" class="<%= cp.indexOf('/calendar') === 0 ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-calendar-alt" aria-hidden="true"></i></span> Calendar</a></li>
+      <% } %>
+      <% if(enabledSlugs.indexOf('reminders') !== -1){ %>
+      <li><a href="/reminders" class="<%= cp.indexOf('/reminders') === 0 ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-clock" aria-hidden="true"></i></span> Reminders</a></li>
+      <% } %>
+      <% if(enabledSlugs.indexOf('alarms') !== -1){ %>
+      <li><a href="/alarms" class="<%= cp.indexOf('/alarms') === 0 ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-bell" aria-hidden="true"></i></span> Alarms</a></li>
+      <% } %>
+      <% if(enabledSlugs.indexOf('subjects') !== -1){ %>
+      <li><a href="/subjects" class="<%= cp.indexOf('/subjects') === 0 ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-book" aria-hidden="true"></i></span> Subjects</a></li>
+      <% } %>
 
-<% if(user && dueNotifications && dueNotifications.length){ %>
-<div class="flash-wrap" id="notifBanner">
-  <div class="flash flash-warning" role="alert">
-    <i class="fas fa-bell" aria-hidden="true"></i>
-    <strong>You have <%= dueNotifications.length %> due notification(s):</strong>
-    <% dueNotifications.slice(0, 3).forEach(function(item, idx){ %>
-      <span><%= idx ? ' &nbsp;|&nbsp; ' : '&nbsp;' %><i class="fas fa-<%= item.type === 'alarm' ? 'bell' : 'clock' %>" aria-hidden="true"></i> <%= item.title %></span>
-    <% }) %>
-  </div>
-</div>
+      <% if(enabledSlugs.indexOf('study') !== -1){ %>
+      <li class="nav-group">
+        <details <%= studyActive ? 'open' : '' %>>
+          <summary class="<%= studyActive ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-book-open" aria-hidden="true"></i></span> Study Planner <i class="fas fa-chevron-down nav-chevron" aria-hidden="true"></i></summary>
+          <ul class="nav-subgroup">
+            <li><a href="/modules/study" class="<%= cp.indexOf('/modules/study') === 0 ? 'active' : '' %>">Overview</a></li>
+            <li><a href="/assignments" class="<%= cp.indexOf('/assignments') === 0 ? 'active' : '' %>">Assignments</a></li>
+            <li><a href="/exams" class="<%= cp.indexOf('/exams') === 0 ? 'active' : '' %>">Examinations</a></li>
+            <li><a href="/study-sessions" class="<%= cp.indexOf('/study-sessions') === 0 ? 'active' : '' %>">Study Sessions</a></li>
+          </ul>
+        </details>
+      </li>
+      <% } %>
+
+      <% if(enabledSlugs.indexOf('health') !== -1){ %>
+      <li class="nav-group">
+        <details <%= healthActive ? 'open' : '' %>>
+          <summary class="<%= healthActive ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-heartbeat" aria-hidden="true"></i></span> Health &amp; Wellness <i class="fas fa-chevron-down nav-chevron" aria-hidden="true"></i></summary>
+          <ul class="nav-subgroup">
+            <li><a href="/modules/health" class="<%= cp.indexOf('/modules/health') === 0 ? 'active' : '' %>">Overview</a></li>
+            <li><a href="/sleep" class="<%= cp.indexOf('/sleep') === 0 ? 'active' : '' %>">Sleep</a></li>
+            <li><a href="/water" class="<%= cp.indexOf('/water') === 0 ? 'active' : '' %>">Water Intake</a></li>
+            <li><a href="/exercise" class="<%= cp.indexOf('/exercise') === 0 ? 'active' : '' %>">Exercise</a></li>
+            <li><a href="/mood" class="<%= cp.indexOf('/mood') === 0 ? 'active' : '' %>">Mood</a></li>
+            <li><a href="/medications" class="<%= cp.indexOf('/medications') === 0 ? 'active' : '' %>">Medications</a></li>
+          </ul>
+        </details>
+      </li>
+      <% } %>
+
+      <% if(enabledSlugs.indexOf('habits') !== -1){ %>
+      <li><a href="/habits" class="<%= cp.indexOf('/habits') === 0 ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-fire" aria-hidden="true"></i></span> Habits</a></li>
+      <% } %>
+
+      <% if(enabledSlugs.indexOf('screentime') !== -1){ %>
+      <li class="nav-group">
+        <details <%= digitalActive ? 'open' : '' %>>
+          <summary class="<%= digitalActive ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-mobile-alt" aria-hidden="true"></i></span> Digital Wellbeing <i class="fas fa-chevron-down nav-chevron" aria-hidden="true"></i></summary>
+          <ul class="nav-subgroup">
+            <li><a href="/modules/screentime" class="<%= cp.indexOf('/modules/screentime') === 0 ? 'active' : '' %>">Overview</a></li>
+            <li><a href="/screen-time" class="<%= cp.indexOf('/screen-time') === 0 ? 'active' : '' %>">Screen Time</a></li>
+            <li><a href="/social-media" class="<%= cp.indexOf('/social-media') === 0 ? 'active' : '' %>">Social Media</a></li>
+          </ul>
+        </details>
+      </li>
+      <% } %>
+
+      <% if(enabledSlugs.indexOf('finance') !== -1){ %>
+      <li class="nav-group">
+        <details <%= financeActive ? 'open' : '' %>>
+          <summary class="<%= financeActive ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-wallet" aria-hidden="true"></i></span> Finance Tracker <i class="fas fa-chevron-down nav-chevron" aria-hidden="true"></i></summary>
+          <ul class="nav-subgroup">
+            <li><a href="/modules/finance" class="<%= cp.indexOf('/modules/finance') === 0 ? 'active' : '' %>">Overview</a></li>
+            <li><a href="/expenses" class="<%= cp.indexOf('/expenses') === 0 ? 'active' : '' %>">Expenses</a></li>
+            <li><a href="/savings-goals" class="<%= cp.indexOf('/savings-goals') === 0 ? 'active' : '' %>">Savings Goals</a></li>
+          </ul>
+        </details>
+      </li>
+      <% } %>
+
+      <% if(enabledSlugs.indexOf('goals') !== -1){ %>
+      <li><a href="/goals" class="<%= cp.indexOf('/goals') === 0 ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-bullseye" aria-hidden="true"></i></span> Goals</a></li>
+      <% } %>
+      <% if(enabledSlugs.indexOf('journal') !== -1){ %>
+      <li><a href="/journal" class="<%= cp.indexOf('/journal') === 0 ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-pen" aria-hidden="true"></i></span> Journal</a></li>
+      <% } %>
+      <% if(enabledSlugs.indexOf('reports') !== -1){ %>
+      <li><a href="/modules/reports" class="<%= cp.indexOf('/modules/reports') === 0 ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-chart-line" aria-hidden="true"></i></span> Reports</a></li>
+      <% } %>
+      <li><a href="/modules/settings" class="<%= (cp.indexOf('/modules/settings') === 0 || (cp.indexOf('/modules') === 0 && !studyActive && !healthActive && !digitalActive && !financeActive && cp.indexOf('/modules/reports') !== 0)) ? 'active' : '' %>"><span class="nav-icon"><i class="fas fa-cog" aria-hidden="true"></i></span> Settings</a></li>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="user-chip">
+        <div class="user-avatar" aria-hidden="true"><%= user.name.charAt(0).toUpperCase() %></div>
+        <span class="user-name"><%= user.name %></span>
+      </div>
+      <a href="/logout" style="text-decoration:none">
+        <button class="btn-logout" id="logoutBtn"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</button>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="topbar" role="navigation" aria-label="Notifications">
+      <button type="button" class="topbar-menu-btn" id="topbarMenuBtn" aria-label="Open navigation">
+        <i class="fas fa-bars" aria-hidden="true"></i>
+      </button>
+      <div class="topbar-spacer"></div>
+      <div class="notif-wrap">
+        <% if(dueNotifications && dueNotifications.length){ %>
+          <button type="button" class="notif-chip" id="notifChip" title="<%= dueNotifications.length %> due notification(s)">
+            <i class="fas fa-bell" aria-hidden="true"></i> <%= dueNotifications.length %> due
+          </button>
+        <% } else { %>
+          <button type="button" class="notif-chip notif-chip-hidden" id="notifChip" style="display:none">
+            <i class="fas fa-bell" aria-hidden="true"></i> <span id="notifCount">0</span> due
+          </button>
+        <% } %>
+        <div class="notif-panel" id="notifPanel" hidden>
+          <div class="notif-panel-head">
+            <span>Notifications</span>
+            <div class="notif-panel-head-actions">
+              <button type="button" class="notif-clear-btn" id="notifClearAll">Clear all</button>
+              <button type="button" class="notif-close-btn" id="notifPanelClose" aria-label="Close">&times;</button>
+            </div>
+          </div>
+          <div class="notif-panel-list" id="notifPanelList"></div>
+          <div class="notif-panel-empty" id="notifPanelEmpty" hidden>You're all caught up!</div>
+        </div>
+      </div>
+    </div>
 <% } %>
 
 <% if(success){ %>
@@ -66,9 +186,141 @@
 <div class="flash-wrap"><div class="flash flash-error" role="alert"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i> <%- error %></div></div>
 <% } %>
 
-<% if(user){ %>
+<% if(setupDone){ %>
 <script>
 (function() {
+  var sidebar = document.querySelector('.sidebar');
+
+  // Sidebar toggle (mobile / narrow viewports) — temporary overlay
+  var menuBtn = document.getElementById('topbarMenuBtn');
+  if (menuBtn) {
+    menuBtn.addEventListener('click', function() {
+      sidebar.classList.toggle('open');
+    });
+  }
+  document.addEventListener('click', function(e) {
+    if (!sidebar || !sidebar.classList.contains('open')) return;
+    if (sidebar.contains(e.target) || e.target === menuBtn || (e.target.closest && e.target.closest('#topbarMenuBtn'))) return;
+    sidebar.classList.remove('open');
+  });
+
+  // Hide / show sidebar — persists across page loads via localStorage
+  var hideBtn = document.getElementById('sidebarHideBtn');
+  var showBtn = document.getElementById('sidebarShowBtn');
+  function setSidebarHidden(hidden) {
+    document.body.classList.toggle('sidebar-hidden', hidden);
+    try { localStorage.setItem('alms_sidebar_hidden', hidden ? '1' : '0'); } catch (e) {}
+  }
+  if (hideBtn) hideBtn.addEventListener('click', function() { setSidebarHidden(true); });
+  if (showBtn) showBtn.addEventListener('click', function() { setSidebarHidden(false); });
+
+  // --- Notification panel: click the bell to see what's due, with
+  // Complete/Snooze (reminders) or Dismiss/Snooze (alarms) actions, plus
+  // a Clear all shortcut. ---
+  var notifChip = document.getElementById('notifChip');
+  var notifPanel = document.getElementById('notifPanel');
+  var notifPanelList = document.getElementById('notifPanelList');
+  var notifPanelEmpty = document.getElementById('notifPanelEmpty');
+  var notifClearAllBtn = document.getElementById('notifClearAll');
+  var notifPanelCloseBtn = document.getElementById('notifPanelClose');
+  var currentNotifItems = <%- JSON.stringify((typeof dueNotifications !== 'undefined' && dueNotifications) ? dueNotifications : []) %>;
+
+  function renderNotifPanel() {
+    if (!notifPanelList) return;
+    notifPanelList.innerHTML = '';
+    if (!currentNotifItems.length) {
+      if (notifPanelEmpty) notifPanelEmpty.hidden = false;
+      return;
+    }
+    if (notifPanelEmpty) notifPanelEmpty.hidden = true;
+    currentNotifItems.forEach(function(item) {
+      var isAlarm = item.type === 'alarm';
+      var row = document.createElement('div');
+      row.className = 'notif-item';
+      row.dataset.id = item.id;
+      row.dataset.type = item.type;
+      row.innerHTML =
+        '<div class="notif-item-title"><i class="fas fa-' + (isAlarm ? 'bell' : 'clock') + '" aria-hidden="true"></i> ' + item.title + '</div>' +
+        '<div class="notif-item-time">' + item.time + '</div>' +
+        '<div class="notif-item-actions">' +
+          '<button type="button" class="btn primary btn-sm notif-act-primary">' + (isAlarm ? 'Dismiss' : 'Complete') + '</button>' +
+          '<button type="button" class="btn secondary btn-sm notif-act-snooze">Snooze 10m</button>' +
+        '</div>';
+      notifPanelList.appendChild(row);
+    });
+  }
+  renderNotifPanel();
+
+  function updateNotifChip() {
+    if (!notifChip) return;
+    var count = currentNotifItems.length;
+    if (count > 0) {
+      notifChip.style.display = 'flex';
+      notifChip.innerHTML = '<i class="fas fa-bell" aria-hidden="true"></i> ' + count + ' due';
+    } else {
+      notifChip.style.display = 'none';
+      if (notifPanel) notifPanel.hidden = true;
+    }
+  }
+
+  function removeNotifItem(id, type) {
+    currentNotifItems = currentNotifItems.filter(function(i) { return !(String(i.id) === String(id) && i.type === type); });
+    renderNotifPanel();
+    updateNotifChip();
+  }
+
+  if (notifChip) {
+    notifChip.addEventListener('click', function() {
+      if (notifPanel) notifPanel.hidden = !notifPanel.hidden;
+    });
+  }
+  if (notifPanelCloseBtn) {
+    // Just hides the panel, back to the bell — doesn't touch any
+    // notification. That's what Clear all is for.
+    notifPanelCloseBtn.addEventListener('click', function() {
+      if (notifPanel) notifPanel.hidden = true;
+    });
+  }
+  document.addEventListener('click', function(e) {
+    if (!notifPanel || notifPanel.hidden) return;
+    if (notifPanel.contains(e.target) || e.target === notifChip || (e.target.closest && e.target.closest('#notifChip'))) return;
+    notifPanel.hidden = true;
+  });
+
+  if (notifPanelList) {
+    notifPanelList.addEventListener('click', function(e) {
+      var row = e.target.closest('.notif-item');
+      if (!row) return;
+      var id = row.dataset.id, type = row.dataset.type;
+      if (e.target.classList.contains('notif-act-primary')) {
+        fetch(type === 'alarm' ? '/alarms/dismiss/' + id : '/reminders/complete/' + id, { method: 'POST' })
+          .then(function(r) { return r.json(); })
+          .then(function(data) { if (data && data.success) removeNotifItem(id, type); })
+          .catch(function() {});
+      } else if (e.target.classList.contains('notif-act-snooze')) {
+        fetch((type === 'alarm' ? '/alarms/snooze/' : '/reminders/snooze/') + id, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'minutes=10'
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(data) { if (data && data.success) removeNotifItem(id, type); })
+          .catch(function() {});
+      }
+    });
+  }
+
+  if (notifClearAllBtn) {
+    notifClearAllBtn.addEventListener('click', function() {
+      currentNotifItems.forEach(function(item) {
+        fetch(item.type === 'alarm' ? '/alarms/dismiss/' + item.id : '/reminders/complete/' + item.id, { method: 'POST' }).catch(function() {});
+      });
+      currentNotifItems = [];
+      renderNotifPanel();
+      updateNotifChip();
+    });
+  }
+
   // Request browser notification permission
   if ("Notification" in window && Notification.permission === "default") {
     Notification.requestPermission();
@@ -93,24 +345,17 @@
       .then(function(r){ return r.json(); })
       .then(function(data) {
         var chip = document.getElementById('notifChip');
-        var banner = document.getElementById('notifBanner');
+        // Keep the click-to-open panel in sync with whatever's actually due now.
+        // Notifications only ever show via the bell + panel (or a native OS
+        // popup below) — never as an always-visible bar on the page itself.
+        currentNotifItems = (data && data.items) || [];
+        renderNotifPanel();
         if (data && data.count > 0) {
           if (chip) {
             chip.style.display = 'flex';
             var countEl = chip.querySelector('#notifCount');
             if (countEl) countEl.textContent = data.count;
             else chip.innerHTML = '<i class="fas fa-bell"></i> ' + data.count + ' due';
-          }
-          if (!banner && data.items && data.items.length) {
-            var wrap = document.createElement('div');
-            wrap.className = 'flash-wrap';
-            wrap.id = 'notifBanner';
-            var msg = data.items.slice(0,3).map(function(i){
-              return '<i class="fas fa-' + (i.type==='alarm'?'bell':'clock') + '"></i> ' + i.title;
-            }).join(' &nbsp;|&nbsp; ');
-            wrap.innerHTML = '<div class="flash flash-warning" role="alert"><i class="fas fa-bell"></i> <strong>' + data.count + ' notification(s):</strong> ' + msg + '</div>';
-            var navbar = document.querySelector('.navbar');
-            if (navbar) navbar.insertAdjacentElement('afterend', wrap);
           }
           if ("Notification" in window && Notification.permission === "granted") {
             data.items.forEach(function(item) {

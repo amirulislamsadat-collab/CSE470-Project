@@ -4,21 +4,32 @@
 const db = require('../config/db');
 
 const Task = {
-  findAllByUser: async (userId) => {
+  // filters is optional so every existing call site (which passes none)
+  // behaves exactly as before.
+  findAllByUser: async (userId, filters = {}) => {
+    const conditions = ['t.user_id = ?'];
+    const params = [userId];
+    if (filters.status) { conditions.push('t.status = ?'); params.push(filters.status); }
+    if (filters.priority) { conditions.push('t.priority = ?'); params.push(filters.priority); }
+    if (filters.category_id) { conditions.push('t.category_id = ?'); params.push(filters.category_id); }
+
     const [rows] = await db.query(
       `SELECT t.*, c.name AS category_name
        FROM tasks t
        LEFT JOIN categories c ON t.category_id = c.id
-       WHERE t.user_id = ?
+       WHERE ${conditions.join(' AND ')}
        ORDER BY FIELD(t.status, 'pending', 'done') ASC, t.created_at DESC`,
-      [userId]
+      params
     );
     return rows;
   },
 
   findById: async (id, userId) => {
     const [rows] = await db.query(
-      'SELECT * FROM tasks WHERE id = ? AND user_id = ?',
+      `SELECT t.*, c.name AS category_name
+       FROM tasks t
+       LEFT JOIN categories c ON t.category_id = c.id
+       WHERE t.id = ? AND t.user_id = ?`,
       [id, userId]
     );
     return rows[0] || null;
