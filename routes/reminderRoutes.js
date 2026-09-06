@@ -11,5 +11,7 @@ router.post('/reminders/create', ctrl.postCreateReminder);
 router.get('/reminders/edit/:id', ctrl.getEditReminder);
 router.post('/reminders/edit/:id', ctrl.postEditReminder);
 router.post('/reminders/delete/:id', ctrl.deleteReminder);
+router.post('/reminders/complete/:id', ctrl.completeReminder);
+router.post('/reminders/snooze/:id', ctrl.snoozeReminder);
 
 module.exports = router;

@@ -45,6 +45,18 @@ module.exports = async (req, res, next) => {
     const dueAlarms = [];
 
     for (const alarm of alarms) {
+      // A snooze always wins, independent of whether it already fired
+      // once today, and doesn't require it to be one of today's scheduled
+      // weekdays either — snoozing "come back in 10 minutes" should work
+      // regardless.
+      if (alarm.snooze_until && new Date(alarm.snooze_until) <= now) {
+        dueAlarms.push(alarm);
+        // dismiss (not markTriggered) so snooze_until is cleared too —
+        // otherwise it'd look "due" again on every future check forever.
+        await Alarm.dismiss(alarm.id, userId);
+        continue;
+      }
+
       if (!alarmMatchesToday(alarm, dayCode)) continue;
       const alarmTime = String(alarm.time_of_day || '').slice(0, 5);
       if (!alarmTime || alarmTime > nowHHMM) continue;
@@ -62,8 +74,8 @@ module.exports = async (req, res, next) => {
     }
 
     res.locals.dueNotifications = [
-      ...dueReminders.map(rem => ({ type: 'reminder', title: rem.title, time: formatDueTime(rem.due_at) })),
-      ...dueAlarms.map(alarm => ({ type: 'alarm', title: alarm.title, time: String(alarm.time_of_day || '').slice(0, 5) }))
+      ...dueReminders.map(rem => ({ id: rem.id, type: 'reminder', title: rem.title, time: formatDueTime(rem.due_at) })),
+      ...dueAlarms.map(alarm => ({ id: alarm.id, type: 'alarm', title: alarm.title, time: String(alarm.time_of_day || '').slice(0, 5) }))
     ];
 
     if (dueReminders.length) {

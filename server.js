@@ -111,47 +111,14 @@ app.use('/', goalRoutes);
 app.use('/', journalRoutes);
 
 // --- Notifications API (for client-side polling without page refresh) ---
-const Reminder = require('./models/Reminder');
-const Alarm    = require('./models/Alarm');
-const DAY_CODES_API = ['SU','MO','TU','WE','TH','FR','SA'];
-
+// notificationMiddleware (registered above, runs on every request including
+// this one) already computes exactly this — reusing it here instead of a
+// second independent copy of the same due-checking logic avoids the two
+// racing each other and double-consuming the same due reminder/alarm.
 app.get('/api/notifications', async (req, res) => {
   if (!req.session.user) return res.json({ count: 0, items: [] });
-  try {
-    const userId = req.session.user.id;
-    const dueReminders = await Reminder.findDue(userId, 5);
-    const alarms = await Alarm.findEnabledByUser(userId);
-    const now = new Date();
-    const nowHHMM = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-    const dayCode = DAY_CODES_API[now.getDay()];
-    const dueAlarms = [];
-    for (const alarm of alarms) {
-      let matches = false;
-      if (alarm.frequency === 'daily') matches = true;
-      else if (alarm.frequency === 'weekdays') matches = ['MO','TU','WE','TH','FR'].includes(dayCode);
-      else if (alarm.frequency === 'custom') matches = alarm.days_of_week && alarm.days_of_week.split(',').includes(dayCode);
-      if (!matches) continue;
-      const alarmTime = String(alarm.time_of_day || '').slice(0,5);
-      if (!alarmTime || alarmTime > nowHHMM) continue;
-      const last = alarm.last_triggered_at ? new Date(alarm.last_triggered_at) : null;
-      const triggeredToday = last && last.getFullYear()===now.getFullYear() && last.getMonth()===now.getMonth() && last.getDate()===now.getDate();
-      if (!triggeredToday) dueAlarms.push(alarm);
-    }
-    if (dueReminders.length) {
-      await Reminder.markNotified(userId, dueReminders.map(r => r.id));
-    }
-    // r.due_at is a JS Date object (from a MySQL DATETIME column) — format it
-    // to a short readable string instead of letting the client stringify the
-    // raw Date/ISO value into the notification popup.
-    const items = [
-      ...dueReminders.map(r => ({ type:'reminder', title: r.title, time: new Date(r.due_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) })),
-      ...dueAlarms.map(a => ({ type:'alarm', title: a.title, time: String(a.time_of_day || '').slice(0, 5) }))
-    ];
-    res.json({ count: items.length, items });
-  } catch (err) {
-    console.error('Notifications API error:', err);
-    res.json({ count: 0, items: [] });
-  }
+  const items = res.locals.dueNotifications || [];
+  res.json({ count: items.length, items });
 });
 
 // --- Root Redirect ---
@@ -349,6 +316,12 @@ async function initDB() {
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `);
+    // Older databases created before the alarm snooze feature won't have
+    // this column yet — add it if missing so upgrading in place is safe.
+    const [alarmCols] = await db.query(`SHOW COLUMNS FROM alarms`);
+    if (!alarmCols.some(c => c.Field === 'snooze_until')) {
+      await db.query(`ALTER TABLE alarms ADD COLUMN snooze_until DATETIME DEFAULT NULL`);
+    }
 
     // ---------- TABLE 11: subjects (Feature 14) ----------
     await db.query(`

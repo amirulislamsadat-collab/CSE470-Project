@@ -23,12 +23,12 @@
       <div class="form-row">
         <div class="fg">
           <label for="taskCategory">Category</label>
-          <select id="taskCategory" name="category_id">
-            <option value="">No Category</option>
+          <input id="taskCategory" type="text" name="category" list="taskCategoryOptions" placeholder="Pick one or type your own" value="<%= currentTask && currentTask.category_name ? currentTask.category_name : '' %>">
+          <datalist id="taskCategoryOptions">
             <% categories.forEach(function(cat) { %>
-              <option value="<%= cat.id %>" <%= currentTask && String(currentTask.category_id) === String(cat.id) ? 'selected' : '' %>><%= cat.name %></option>
+              <option value="<%= cat.name %>">
             <% }) %>
-          </select>
+          </datalist>
         </div>
 
         <div class="fg">

@@ -97,3 +97,29 @@ exports.deleteReminder = async (req, res) => {
   }
   res.redirect('/reminders');
 };
+
+// The next two are called from the notification panel via fetch(), not a
+// full page navigation, so they respond with JSON instead of a redirect.
+exports.completeReminder = async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ error: 'Please log in.' });
+  try {
+    await Reminder.delete(req.params.id, req.session.user.id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Complete reminder error:', err);
+    res.status(500).json({ error: 'Failed to complete reminder.' });
+  }
+};
+
+exports.snoozeReminder = async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ error: 'Please log in.' });
+  const parsed = parseInt(req.body.minutes, 10);
+  const minutes = Number.isNaN(parsed) ? 10 : parsed;
+  try {
+    await Reminder.snooze(req.params.id, req.session.user.id, minutes);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Snooze reminder error:', err);
+    res.status(500).json({ error: 'Failed to snooze reminder.' });
+  }
+};
