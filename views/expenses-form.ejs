@@ -35,7 +35,11 @@
       </div>
       <div class="fg">
         <label for="exDate">Date <span class="required">*</span></label>
+<<<<<<< HEAD
         <input id="exDate" type="date" name="expense_date" required value="<%= expense ? new Date(expense.expense_date).toLocaleDateString('en-CA') : new Date().toLocaleDateString('en-CA') %>">
+=======
+        <input id="exDate" type="date" name="expense_date" required value="<%= expense ? new Date(expense.expense_date).toISOString().slice(0,10) : new Date().toISOString().slice(0,10) %>">
+>>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
       </div>
       <div class="fg">
         <label for="exDesc">Description</label>

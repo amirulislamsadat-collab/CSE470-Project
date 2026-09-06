@@ -97,7 +97,11 @@ exports.addContribution = async (req, res) => {
     return res.redirect(`/savings-goals/edit/${req.params.id}`);
   }
   try {
+<<<<<<< HEAD
     await SavingsGoal.addContribution(req.params.id, req.session.user.id, amount, contributed_on || new Date().toLocaleDateString('en-CA'));
+=======
+    await SavingsGoal.addContribution(req.params.id, req.session.user.id, amount, contributed_on || new Date().toISOString().slice(0, 10));
+>>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
     req.session.success = 'Contribution added!';
   } catch (err) {
     console.error('Add contribution error:', err);

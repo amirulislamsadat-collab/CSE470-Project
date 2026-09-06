@@ -16,8 +16,12 @@ exports.getSetup = async (req, res) => {
   try {
     const roles   = await Role.findAll();
     const modules = await Module.findAll();
+<<<<<<< HEAD
     let step = req.query.step || 'role';
     if (step === 'modules' && !req.session.user.role_id) step = 'role';
+=======
+    const step = req.query.step || 'role';
+>>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
     const recommended = roleRecommendations[req.session.user.role] || [];
     res.render('setup', { user: req.session.user, roles, modules, step, recommended, roleRecommendations });
   } catch (err) {
@@ -45,10 +49,13 @@ exports.postRole = async (req, res) => {
 
 exports.postModules = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
+<<<<<<< HEAD
   if (!req.session.user.role_id) {
     req.session.error = 'Please select your role first.';
     return res.redirect('/setup');
   }
+=======
+>>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
   const userId = req.session.user.id;
   let selected = req.body.modules || [];
   if (!Array.isArray(selected)) selected = [selected];

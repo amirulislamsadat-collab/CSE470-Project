@@ -23,10 +23,14 @@
         </div>
         <div class="fg">
           <label for="sDate">Session Date &amp; Time <span class="required">*</span></label>
+<<<<<<< HEAD
           <div class="date-time-group">
             <input id="sDate" type="date" name="session_date" required value="<%= session ? new Date(session.session_date).toLocaleDateString('en-CA') : '' %>">
             <input id="sTime" type="time" name="session_time" required value="<%= session ? new Date(session.session_date).toTimeString().slice(0,5) : '' %>">
           </div>
+=======
+          <input id="sDate" type="datetime-local" name="session_date" required value="<%= session ? new Date(session.session_date).toISOString().slice(0,16) : '' %>">
+>>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
         </div>
       </div>
       <div class="form-row">

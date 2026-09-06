@@ -19,7 +19,11 @@
       </div>
     </div>
     <form method="POST" action="/water/create" class="water-quick-form" id="quickWaterForm">
+<<<<<<< HEAD
       <input type="hidden" name="log_date" value="<%= new Date().toLocaleDateString('en-CA') %>">
+=======
+      <input type="hidden" name="log_date" value="<%= new Date().toISOString().slice(0,10) %>">
+>>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
       <select name="amount_ml" id="waterAmount">
         <option value="150">150 ml (Glass)</option>
         <option value="250" selected>250 ml (Cup)</option>

@@ -13,7 +13,11 @@
       <div class="form-row">
         <div class="fg">
           <label for="stDate">Date <span class="required">*</span></label>
+<<<<<<< HEAD
           <input id="stDate" type="date" name="log_date" required value="<%= log ? new Date(log.log_date).toLocaleDateString('en-CA') : new Date().toLocaleDateString('en-CA') %>">
+=======
+          <input id="stDate" type="date" name="log_date" required value="<%= log ? new Date(log.log_date).toISOString().slice(0,10) : new Date().toISOString().slice(0,10) %>">
+>>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
         </div>
         <div class="fg">
           <label for="stActivity">Activity <span class="required">*</span></label>

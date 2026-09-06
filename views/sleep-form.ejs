@@ -9,7 +9,11 @@
     <form method="POST" action="<%= formAction %>" id="sleepForm">
       <div class="fg">
         <label for="slDate">Date <span class="required">*</span></label>
+<<<<<<< HEAD
         <input id="slDate" type="date" name="sleep_date" required value="<%= log ? new Date(log.sleep_date).toLocaleDateString('en-CA') : new Date().toLocaleDateString('en-CA') %>">
+=======
+        <input id="slDate" type="date" name="sleep_date" required value="<%= log ? new Date(log.sleep_date).toISOString().slice(0,10) : new Date().toISOString().slice(0,10) %>">
+>>>>>>> 933194e435040aee00dc0df3fd88077d575bf155
       </div>
       <div class="form-row">
         <div class="fg">
