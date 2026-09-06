@@ -3,6 +3,7 @@
 // ============================================================
 const Examination = require('../models/Examination');
 const Subject     = require('../models/Subject');
+const { combineDateTime } = require('../utils/dateTime');
 
 async function getExams(req, res) {
   if (!req.session.user) {
@@ -46,7 +47,7 @@ async function postCreateExam(req, res) {
   }
   const subjectId = req.body.subject_id;
   const title = req.body.title;
-  const examDate = req.body.exam_date;
+  const examDate = combineDateTime(req.body.exam_date, req.body.exam_time);
   const location = req.body.location;
   const notes = req.body.notes;
 
@@ -106,7 +107,7 @@ async function postEditExam(req, res) {
   }
   const subjectId = req.body.subject_id;
   const title = req.body.title;
-  const examDate = req.body.exam_date;
+  const examDate = combineDateTime(req.body.exam_date, req.body.exam_time);
   const location = req.body.location;
   const notes = req.body.notes;
 

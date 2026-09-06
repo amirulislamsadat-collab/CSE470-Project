@@ -21,7 +21,7 @@
         </div>
         <div class="fg">
           <label for="sgDate">Target Date</label>
-          <input id="sgDate" type="date" name="target_date" value="<%= goal && goal.target_date ? new Date(goal.target_date).toISOString().slice(0,10) : '' %>">
+          <input id="sgDate" type="date" name="target_date" value="<%= goal && goal.target_date ? new Date(goal.target_date).toLocaleDateString('en-CA') : '' %>">
         </div>
       </div>
       <div class="form-actions">
@@ -46,7 +46,7 @@
       </div>
       <div class="fg" style="margin-bottom:0;flex:1;min-width:140px;">
         <label for="contribDate">Date</label>
-        <input id="contribDate" type="date" name="contributed_on" value="<%= new Date().toISOString().slice(0,10) %>">
+        <input id="contribDate" type="date" name="contributed_on" value="<%= new Date().toLocaleDateString('en-CA') %>">
       </div>
       <button type="submit" class="btn primary" id="addContributionBtn"><i class="fas fa-plus" aria-hidden="true"></i> Add</button>
     </form>

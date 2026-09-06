@@ -9,7 +9,7 @@
     <form method="POST" action="<%= formAction %>" id="waterForm">
       <div class="fg">
         <label for="wDate">Date <span class="required">*</span></label>
-        <input id="wDate" type="date" name="log_date" required value="<%= new Date(log.log_date).toISOString().slice(0,10) %>">
+        <input id="wDate" type="date" name="log_date" required value="<%= new Date(log.log_date).toLocaleDateString('en-CA') %>">
       </div>
       <div class="fg">
         <label for="wAmount">Amount (ml) <span class="required">*</span></label>

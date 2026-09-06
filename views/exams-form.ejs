@@ -23,7 +23,10 @@
         </div>
         <div class="fg">
           <label for="eDate">Exam Date &amp; Time <span class="required">*</span></label>
-          <input id="eDate" type="datetime-local" name="exam_date" required value="<%= exam ? new Date(exam.exam_date).toISOString().slice(0,16) : '' %>">
+          <div class="date-time-group">
+            <input id="eDate" type="date" name="exam_date" required value="<%= exam ? new Date(exam.exam_date).toLocaleDateString('en-CA') : '' %>">
+            <input id="eTime" type="time" name="exam_time" required value="<%= exam ? new Date(exam.exam_date).toTimeString().slice(0,5) : '' %>">
+          </div>
         </div>
       </div>
       <div class="fg">

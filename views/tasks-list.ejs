@@ -36,7 +36,7 @@
                 <% if(task.category_name) { %>
                   <span class="badge-cat"><i class="fas fa-tag" aria-hidden="true"></i> <%= task.category_name %></span>
                 <% } %>
-                <span><i class="fas fa-flag" aria-hidden="true"></i> Priority: <%= task.priority %></span>
+                <span class="badge-priority <%= task.priority %>"><i class="fas fa-flag" aria-hidden="true"></i> <%= task.priority %></span>
               </div>
             </div>
           </div>

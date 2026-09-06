@@ -2,14 +2,15 @@
 // Controller: Calendar — handles calendar events (Features 9-10)
 // ============================================================
 const CalendarEvent = require('../models/CalendarEvent');
+const { combineDateTime } = require('../utils/dateTime');
 
 function parseEventBody(body) {
   return {
     title: (body.title || '').trim(),
     description: (body.description || '').trim(),
     location: (body.location || '').trim(),
-    start_time: body.start_time,
-    end_time: body.end_time
+    start_time: combineDateTime(body.start_date, body.start_time),
+    end_time: combineDateTime(body.end_date, body.end_time)
   };
 }
 

@@ -292,6 +292,10 @@ body.sidebar-hidden .sidebar { display: none; }
 .form-actions { display: flex; gap: 16px; justify-content: flex-end; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border-color); }
 .required { color: var(--danger); font-weight: bold; }
 
+/* --- Date + Time input pairs (split from datetime-local for reliable editing) --- */
+.date-time-group { display: flex; gap: 10px; }
+.date-time-group input { width: auto; flex: 1; min-width: 0; }
+
 /* --- Days Grid (Custom Alarms) --- */
 .days-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
 .day-checkbox { display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s; }

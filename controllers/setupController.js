@@ -16,7 +16,8 @@ exports.getSetup = async (req, res) => {
   try {
     const roles   = await Role.findAll();
     const modules = await Module.findAll();
-    const step = req.query.step || 'role';
+    let step = req.query.step || 'role';
+    if (step === 'modules' && !req.session.user.role_id) step = 'role';
     const recommended = roleRecommendations[req.session.user.role] || [];
     res.render('setup', { user: req.session.user, roles, modules, step, recommended, roleRecommendations });
   } catch (err) {
@@ -44,6 +45,10 @@ exports.postRole = async (req, res) => {
 
 exports.postModules = async (req, res) => {
   if (!req.session.user) return res.redirect('/login');
+  if (!req.session.user.role_id) {
+    req.session.error = 'Please select your role first.';
+    return res.redirect('/setup');
+  }
   const userId = req.session.user.id;
   let selected = req.body.modules || [];
   if (!Array.isArray(selected)) selected = [selected];
